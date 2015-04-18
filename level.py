@@ -11,6 +11,7 @@ class Level(object):
             self.height = self._level_def['h']
             self.actors = []
             self._tile_size = None
+            self.physics_manager = physics_manager
 
             physics_manager.world_width = self.width
             physics_manager.world_height = self.height
@@ -36,3 +37,8 @@ class Level(object):
         if(tile_size != self._tile_size):
             self.surface = pygame.transform.scale(self.surface, (self.width * tile_size, self.height * tile_size))
             self._tile_size = tile_size
+
+        dissolved_actors = [a for a in self.actors if a.dissolved]
+        for actor in dissolved_actors:
+            self.actors.remove(actor)
+            self.physics_manager.remove_actor(actor)
