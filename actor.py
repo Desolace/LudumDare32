@@ -19,6 +19,7 @@ class Actor(object):
         self.widthInTiles = wTiles
         self.heightInTiles = hTiles
         self._is_dissolving = False
+        self.dissolved = False
 
     def start_dissolving(self):
         if not self._is_dissolving:
@@ -51,6 +52,7 @@ class Actor(object):
                     self.surface.fill((1,1,1), pygame.Rect(tile[0] * tileSize, tile[1] * tileSize, tileSize, tileSize))
             else:
                 self._is_dissolving = False
+                self.dissolved = True
 
 
     def __hash__(self):

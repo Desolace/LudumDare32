@@ -33,7 +33,7 @@ class PhysicsManager(object):
         self._actors[actor].weight = weight
 
     def remove_actor(self, actor):
-        self._actors[actor] = None
+        del self._actors[actor]
 
     def set_velocity(self, actor, velocity):
         self._actors[actor].velocity = velocity
