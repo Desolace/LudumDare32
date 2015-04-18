@@ -1,5 +1,5 @@
 import pygame
-from random import *
+from collisions import CollisionDetector
 
 class PhysicsAttributes:
     def __init__(self):
@@ -10,7 +10,9 @@ class PhysicsAttributes:
         self.acceleration = [0.0, 0.0]
 
     def get_rect(self):
-        return pygame.Rect(self.position[0], self.position[1], self.position[0] + self.width, self.position[1] + self.height)
+        return pygame.Rect(self.position[0], self.position[1], self.width, self.height)
+    def get_scaled_rect(self, scale):
+        return pygame.Rect(self.position[0] * scale, self.position[1] * scale, self.width * scale, self.height * scale)
 
 X = 0
 Y = 1
@@ -18,6 +20,7 @@ Y = 1
 class PhysicsManager(object):
     _actors = {}
     _worldWidth, _worldHeight = None, None
+    _collision_precision = 100
 
     UNITS_PER_TILE = 10
 
@@ -54,46 +57,12 @@ class PhysicsManager(object):
     def set_position(self, actor, (positionX, positionY)):
         self._actors[actor].position = [positionX, positionY]
 
-    def _handleCollisionsX(self, actor):
-        collisionX = self._isColliding(actor)
-        while collisionX is not None:
-            #self._snapBackX(actor, collisionX)
-            print collisionX
-            print random()
-            return
-            collisionX = self._isColliding(actor)
-
-    """
-    Determines if a given actor is currently in collision with any other actor
-    """
-    def _isColliding(self, actor):
-        actorRect = self._actors[actor].get_rect()
-        for otherActor, otherAttributes in self._actors.iteritems():
-            if actor != otherActor and actorRect.colliderect(otherAttributes.get_rect()):
-                return otherActor
-        return None
-
-    def _snapBackX(self, movingActor, blockingActor):
-        movingRect = self._actors[movingActor].get_rect()
-        blockingRect = self._actors[blockingActor].get_rect()
-
-        if movingRect.right > blockingRect.left and movingRect.left < blockingRect.left: #borders on the left edge
-            self._actors[movingActor].position[X] = blockingRect.left - self._actors[movingActor].width - 1
-        elif movingRect.left < blockingRect.right and movingRect.right > blockingRect.right: #borders on the right edge
-            self._actors[movingActor].position[X] = blockingRect.right + 1
-
     def update(self, delta, tileSize):
+        collision_detector = CollisionDetector(self._actors, self._collision_precision)
+
         for actor, attributes in self._actors.iteritems():
             attributes.velocity[X] += delta * attributes.acceleration[X] #every frame, we update the velocity based on how fast it is changing
             attributes.velocity[Y] += delta * attributes.acceleration[Y]
-
-            attributes.position[X] += delta * attributes.velocity[X] * self.UNITS_PER_TILE
-            if(attributes.position[X] < 0):
-                attributes.position[X] = 0
-            elif(attributes.position[X] > self._worldWidth - attributes.width):
-                attributes.position[X] = self._worldWidth - attributes.width
-
-            #self._handleCollisionsX(actor)
 
             attributes.position[Y] += delta * attributes.velocity[Y] * self.UNITS_PER_TILE
             if(attributes.position[Y] < 0):
@@ -102,7 +71,17 @@ class PhysicsManager(object):
             elif(attributes.position[Y] > self._worldHeight - attributes.height):
                 attributes.position[Y] = self._worldHeight - attributes.height
                 attributes.velocity[Y] = 0
+            if attributes.velocity[Y] != 0:
+                collision_detector.handle_collisions_y(actor)
 
-        #set screen positions
+            attributes.position[X] += delta * attributes.velocity[X] * self.UNITS_PER_TILE
+            if(attributes.position[X] < 0):
+                attributes.position[X] = 0
+            elif(attributes.position[X] > self._worldWidth - attributes.width):
+                attributes.position[X] = self._worldWidth - attributes.width
+            if attributes.velocity[X] != 0:
+                collision_detector.handle_collisions_x(actor)
+
+        #set real screen positions
         for actor, attributes in self._actors.iteritems():
             actor.position = (attributes.position[X] * tileSize, attributes.position[1] * tileSize)
