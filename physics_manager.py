@@ -84,27 +84,25 @@ class PhysicsManager(object):
 
     def update(self, delta, tileSize):
         for actor, attributes in self._actors.iteritems():
-            attributes.velocity[0] += delta * attributes.acceleration[0] #every frame, we update the velocity based on how fast it is changing
-            attributes.velocity[1] += delta * attributes.acceleration[1]
+            attributes.velocity[X] += delta * attributes.acceleration[X] #every frame, we update the velocity based on how fast it is changing
+            attributes.velocity[Y] += delta * attributes.acceleration[Y]
 
-            attributes.position[0] += delta * attributes.velocity[0] * self.UNITS_PER_TILE
-            if(attributes.position[0] < 0):
-                attributes.position[0] = 0
-                attributes.velocity[0] = 0
-            elif(attributes.position[0] > self._worldWidth - attributes.width):
-                attributes.position[0] = self._worldWidth - attributes.width
-                attributes.velocity[0] = 0 #the object has stopped moving
+            attributes.position[X] += delta * attributes.velocity[X] * self.UNITS_PER_TILE
+            if(attributes.position[X] < 0):
+                attributes.position[X] = 0
+            elif(attributes.position[X] > self._worldWidth - attributes.width):
+                attributes.position[X] = self._worldWidth - attributes.width
 
             #self._handleCollisionsX(actor)
 
-            attributes.position[1] += delta * attributes.velocity[1] * self.UNITS_PER_TILE
-            if(attributes.position[1] < 0):
-                attributes.position[1] = 0
-                attributes.velocity[1] = 0
-            elif(attributes.position[1] > self._worldHeight - attributes.height):
-                attributes.position[1] = self._worldHeight - attributes.height
-                attributes.velocity[1] = 0
+            attributes.position[Y] += delta * attributes.velocity[Y] * self.UNITS_PER_TILE
+            if(attributes.position[Y] < 0):
+                attributes.position[Y] = 0
+                attributes.velocity[Y] = 0
+            elif(attributes.position[Y] > self._worldHeight - attributes.height):
+                attributes.position[Y] = self._worldHeight - attributes.height
+                attributes.velocity[Y] = 0
 
         #set screen positions
         for actor, attributes in self._actors.iteritems():
-            actor.position = (attributes.position[0] * tileSize, attributes.position[1] * tileSize)
+            actor.position = (attributes.position[X] * tileSize, attributes.position[1] * tileSize)
