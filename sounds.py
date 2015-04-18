@@ -1,9 +1,12 @@
 import pygame
 import sys
 
+
 class SoundManager(object):
+    
     def __init__(self,contEffect=None):
         self.contEffect = contEffect
+        self.soundList = {'run' : 0}        
 
     def set_background_music(level):
         backgroundMusic.stop()
@@ -12,11 +15,11 @@ class SoundManager(object):
             backFilename = ""
         try:
             backgroundMusic = pygame.mixer.Sound(backFilename)
-            backgroundMusix.play(loops = -1)
+            backgroundMusic.play(loops = -1)
         except:
             print "error"
             
-    def play_one_sound_effect(s,effect):
+    def play_one_sound_effect(self,effect):
         effectFilename = ''
         if effect == "jump":
             effectFilename = 'sounds/jump.wav'
@@ -27,20 +30,22 @@ class SoundManager(object):
             e = sys.exc_info()[0]
             print e
 
-    def start_cont_effect(s,effect):
+    def start_cont_effect(self,effect):
         contFilename = ''
-        if effect == "run":
-            contFilename = 'sounds/run.wav'
-        try:
-            s.contEffect = pygame.mixer.Sound(contFilename)
-            s.contEffect.play(loops = -1)
-        except:
-            e = sys.exc_info()[0]
-            print e
+        if effect == 'run':
+            self.soundList[effect] += 1
+            if self.soundList[effect] == 1:
+                contFilename = 'sounds/run.wav'
+                try:
+                    self.contEffect = pygame.mixer.Sound(contFilename)
+                    self.contEffect.play(loops = -1)
+                except NameError as e:
+                    print e
 
-    def stop_cont_effect(s):
+    def stop_cont_effect(self,effect):
         try:
-            s.contEffect.stop()
-        except:
-            e = sys.exc_info()[0]
+            self.soundList[effect] -= 1
+            if self.soundList[effect] == 0:
+                self.contEffect.stop()
+        except NameError as e:
             print e

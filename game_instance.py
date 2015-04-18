@@ -22,7 +22,7 @@ class GameInstance(object):
 
         self.physics_manager.add_actor(self.main_char, weight=3)
         self._highlight_actors = False
-
+        self.userSounds = SoundManager()
 
     def _handle_dissolving(self, position):
         [actor.start_dissolving() for actor in self.level.actors if self.picking_handler.is_picked(actor, position)]
@@ -34,25 +34,25 @@ class GameInstance(object):
         tile_size = screen.get_width() / self.level.width
         
         for event in self.input_manager.eventQueue():
-            userSounds = SoundManager()
+            
             if event == Actions.QUIT:
                 raise UserQuitException()
             elif event == Actions.START_USER_LEFT:
                 self.physics_manager.add_velocity_x(self.main_char, -self.config["user_motion_speed"])
-                userSounds.start_cont_effect("run")
+                self.userSounds.start_cont_effect('run')
             elif event == Actions.START_USER_RIGHT:
                 self.physics_manager.add_velocity_x(self.main_char, self.config["user_motion_speed"])
-                userSounds.start_cont_effect("run")
+                self.userSounds.start_cont_effect('run')
             elif event == Actions.START_USER_UP:
                 if self.physics_manager.get_velocity_y(self.main_char) == 0:
                     self.physics_manager.add_velocity_y(self.main_char, -self.config["user_jump_speed"])
-                    userSounds.play_one_sound_effect("jump")
+                    self.userSounds.play_one_sound_effect('jump')
             elif event == Actions.STOP_USER_LEFT:
                 self.physics_manager.add_velocity_x(self.main_char, self.config["user_motion_speed"])
-                userSounds.stop_cont_effect()
+                self.userSounds.stop_cont_effect('run')
             elif event == Actions.STOP_USER_RIGHT:
                 self.physics_manager.add_velocity_x(self.main_char, -self.config["user_motion_speed"])
-                userSounds.stop_cont_effect()
+                self.userSounds.stop_cont_effect('run')
             elif event == Actions.USER_SUCK:
                 self._handle_dissolving(self.input_manager.last_click_position)
             elif event == Actions.USER_BLOW:
