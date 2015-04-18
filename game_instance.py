@@ -8,14 +8,16 @@ from input_manager import InputManager, Actions
 from physics_manager import PhysicsManager
 from picking_handler import PickingHandler
 from sounds import SoundManager
+from transmutation_manager import TransmutationManager
 
 class GameInstance(object):
-    
+
     def __init__(self, config, level_name):
         self.config = config
         self.input_manager = InputManager()
         self.physics_manager = PhysicsManager()
         self.picking_handler = PickingHandler()
+        self.transmutation_manager = TransmutationManager()
         self.level = Level("{0}/{1}.lvl".format(config["levels_dir"], level_name), self.physics_manager)
 
         self.main_char = Actor.genMainCharacter()
@@ -25,14 +27,14 @@ class GameInstance(object):
 
 
     def _handle_dissolving(self, position):
-        [actor.start_dissolving() for actor in self.level.actors if self.picking_handler.is_picked(actor, position)]
+        [self.transmutation_manager.suck(actor) for actor in self.level.actors if self.picking_handler.is_picked(actor, position)]
 
     def _handle_spawning(self, position):
         pass
 
     def doFrame(self, screen, delta):
         tile_size = screen.get_width() / self.level.width
-        
+
         for event in self.input_manager.eventQueue():
             userSounds = SoundManager()
             if event == Actions.QUIT:
@@ -63,6 +65,7 @@ class GameInstance(object):
                 self._highlight_actors = False
 
         self.physics_manager.update(delta, tile_size)
+        self.transmutation_manager.update(delta)
 
         self.main_char.update(delta, tile_size)
         for actor in self.level.actors:
