@@ -18,6 +18,11 @@ class GameInstance(object):
 
         self.physics_manager.add_actor(self.main_char, weight=3)
 
+    def _handle_dissolving(self, position):
+        for actor in self.level.actors:
+            if actor.get_rect().collidepoint(position):
+                actor.start_dissolving()
+
     def doFrame(self, screen, delta):
         tile_size = screen.get_width() / self.level.width
 
@@ -35,6 +40,8 @@ class GameInstance(object):
                 self.physics_manager.add_velocity_x(self.main_char, self.config["user_motion_speed"])
             elif event == Actions.STOP_USER_RIGHT:
                 self.physics_manager.add_velocity_x(self.main_char, -self.config["user_motion_speed"])
+            elif event == Actions.STOP_USER_CLICK:
+                self._handle_dissolving(self.input_manager.last_click_position)
 
         self.physics_manager.update(delta, tile_size)
 
