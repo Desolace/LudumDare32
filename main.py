@@ -17,7 +17,8 @@ config_handle.close()
 
 try:
     pygame.init()
-    surface = pygame.display.set_mode((1000, 600))
+    pygame.display.set_caption(config["title"])
+    surface = pygame.display.set_mode((config["width"], config["height"]))
     game = GameInstance(config, "first")
     clock = pygame.time.Clock()
 
