@@ -18,19 +18,20 @@ class Actor(object):
         self._hash = hash(self._baseSurface)
         self.widthInTiles = wTiles
         self.heightInTiles = hTiles
+        self.points_per_tile = 0
         self._is_dissolving = False
         self.dissolved = False
 
     def start_dissolving(self):
         if not self._is_dissolving:
             self._is_dissolving = True
-            self._tiles_to_dissolve = []
+            self.tiles_to_dissolve = []
 
             for i in range(0, self.widthInTiles):
                 for j in range(0, self.heightInTiles):
-                    self._tiles_to_dissolve.append((i, j))
+                    self.tiles_to_dissolve.append((i, j))
 
-            self._total_tile_count = len(self._tiles_to_dissolve)
+            self.total_tile_count = len(self.tiles_to_dissolve)
 
     @staticmethod
     def genMainCharacter():
@@ -42,13 +43,13 @@ class Actor(object):
             self._tileSize = tileSize
 
         if self._is_dissolving:
-            if len(self._tiles_to_dissolve) > 0:
+            if len(self.tiles_to_dissolve) > 0:
                 percent_to_dissolve = delta / Actor.DISSOLVE_DURATION_SECONDS
-                num_tiles_to_dissolve = int(math.ceil(self._total_tile_count * percent_to_dissolve))
+                num_tiles_to_dissolve = int(math.ceil(self.total_tile_count * percent_to_dissolve))
 
-                to_dissolve = random.sample(self._tiles_to_dissolve, num_tiles_to_dissolve)
+                to_dissolve = random.sample(self.tiles_to_dissolve, num_tiles_to_dissolve)
                 for tile in to_dissolve:
-                    self._tiles_to_dissolve.remove(tile)
+                    self.tiles_to_dissolve.remove(tile)
                     self.surface.fill((1,1,1), pygame.Rect(tile[0] * tileSize, tile[1] * tileSize, tileSize, tileSize))
             else:
                 self._is_dissolving = False

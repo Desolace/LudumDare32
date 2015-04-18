@@ -17,6 +17,7 @@ class Level(object):
             physics_manager.world_height = self.height
 
             self.surface = pygame.Surface((self.width, self.height))
+            self.surface.fill((255,255,255))
 
             for item in self._level_def['map']:
                 material = self._level_def['materials'][item['mat']]
@@ -29,6 +30,7 @@ class Level(object):
                     self.surface.blit(subsurface, (item['x'], item['y']))
                 else: #its an actor in the world
                     new_actor = Actor(subsurface, item['w'], item['h'])
+                    new_actor.points_per_tile = material["points"]
                     physics_manager.add_actor(new_actor, weight=material["weight"])
                     physics_manager.set_position(new_actor, (item['x'], item['y']))
                     self.actors.append(new_actor)

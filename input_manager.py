@@ -12,6 +12,8 @@ class Actions(object):
     STOP_USER_UP=7
     STOP_USER_DOWN=8
     USER_SUCK=9
+    START_BLOW_SELECTION=13
+    STOP_BLOW_SELECTION=14
     USER_BLOW=10
     START_DISSOLVE_SELECTION=11
     STOP_DISSOLVE_SELECTION=12
@@ -50,10 +52,16 @@ class InputManager(object):
                 elif event.key == K_LCTRL or event.key == K_RCTRL:
                     yield Actions.STOP_DISSOLVE_SELECTION
 
+            elif event.type == MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    self.last_click_position = event.pos
+                    if not (pygame.key.get_mods() & KMOD_CTRL):
+                        yield Actions.START_BLOW_SELECTION
             elif event.type == MOUSEBUTTONUP:
                 if event.button == 1: #left click
                     self.last_click_position = event.pos
                     if pygame.key.get_mods() & KMOD_CTRL:
                         yield Actions.USER_SUCK
                     else:
+                        yield Actions.STOP_BLOW_SELECTION
                         yield Actions.USER_BLOW
