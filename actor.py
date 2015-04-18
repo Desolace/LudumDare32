@@ -1,4 +1,6 @@
 import pygame
+import random
+import math
 
 class Actor(object):
     MAIN_CHARACTER = ("characters/dumb.jpg", 5, 6)
@@ -8,12 +10,26 @@ class Actor(object):
     widthInTiles, heightInTiles = None, None
     position = (0,0)
     _tileSize = None
+    DISSOLVE_DURATION_SECONDS = 1
 
     def __init__(self, surface, wTiles, hTiles):
         self._baseSurface = surface
+        self._baseSurface.set_colorkey((1,1,1))
         self._hash = hash(self._baseSurface)
         self.widthInTiles = wTiles
         self.heightInTiles = hTiles
+        self._is_dissolving = False
+
+    def start_dissolving(self):
+        if not self._is_dissolving:
+            self._is_dissolving = True
+            self._tiles_to_dissolve = []
+
+            for i in range(0, self.widthInTiles):
+                for j in range(0, self.heightInTiles):
+                    self._tiles_to_dissolve.append((i, j))
+
+            self._total_tile_count = len(self._tiles_to_dissolve)
 
     @staticmethod
     def genMainCharacter():
@@ -24,8 +40,25 @@ class Actor(object):
             self.surface = pygame.transform.smoothscale(self._baseSurface, (self.widthInTiles*tileSize, self.heightInTiles*tileSize))
             self._tileSize = tileSize
 
+        if self._is_dissolving:
+            if len(self._tiles_to_dissolve) > 0:
+                percent_to_dissolve = delta / Actor.DISSOLVE_DURATION_SECONDS
+                num_tiles_to_dissolve = int(math.ceil(self._total_tile_count * percent_to_dissolve))
+
+                to_dissolve = random.sample(self._tiles_to_dissolve, num_tiles_to_dissolve)
+                for tile in to_dissolve:
+                    self._tiles_to_dissolve.remove(tile)
+                    self.surface.fill((1,1,1), pygame.Rect(tile[0] * tileSize, tile[1] * tileSize, tileSize, tileSize))
+            else:
+                self._is_dissolving = False
+
+
     def __hash__(self):
         return self._hash
 
     def __eq__(self, other):
         return hash(self) == hash(other)
+
+    def get_rect(self):
+        surf_rect = self.surface.get_rect()
+        return surf_rect.move(*self.position)
