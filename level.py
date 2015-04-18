@@ -29,7 +29,7 @@ class Level(object):
                     self.surface.blit(subsurface, (item['x'], item['y']))
                 else: #its an actor in the world
                     new_actor = Actor(subsurface, item['w'], item['h'])
-                    new_actor.point_value = material["points"]
+                    new_actor.points_per_tile = material["points"]
                     physics_manager.add_actor(new_actor, weight=material["weight"])
                     physics_manager.set_position(new_actor, (item['x'], item['y']))
                     self.actors.append(new_actor)
