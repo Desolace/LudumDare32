@@ -18,6 +18,7 @@ class Actor(object):
         self._hash = hash(self._baseSurface)
         self.widthInTiles = wTiles
         self.heightInTiles = hTiles
+        self.point_value = 0
         self._is_dissolving = False
         self.dissolved = False
 
