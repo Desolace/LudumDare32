@@ -1,6 +1,6 @@
 import pygame
 
-class Character(object):
+class Actor(object):
     MAIN_CHARACTER = ("characters/dumb.jpg", 5, 6)
 
     _hash = None
@@ -9,15 +9,15 @@ class Character(object):
     position = (0,0)
     _tileSize = None
 
-    def __init__(self, (imageName, wTiles, hTiles)):
-        self._baseSurface = pygame.image.load(imageName)
+    def __init__(self, surface, wTiles, hTiles):
+        self._baseSurface = surface
         self._hash = hash(self._baseSurface)
         self.widthInTiles = wTiles
         self.heightInTiles = hTiles
 
     @staticmethod
     def genMainCharacter():
-        return Character(Character.MAIN_CHARACTER)
+        return Actor(pygame.image.load(Actor.MAIN_CHARACTER[0]), Actor.MAIN_CHARACTER[1], Actor.MAIN_CHARACTER[2])
 
     def update(self, delta, tileSize):
         if tileSize != self._tileSize:

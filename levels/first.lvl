@@ -2,22 +2,61 @@
   "w":100,
   "h":60,
   "materials":{
-    "dirt":[153, 102, 51]
+    "dirt":{
+      "color":[153, 102, 51],
+      "weight":5
+    }, "stone":{
+      "color":[85, 85, 85],
+      "weight":30
+    }, "cloud":{
+      "color":[90, 162, 216],
+      "weight":0
+    }
   },
   "map": [
     {
+      "name": "some dirt",
       "x":10,
       "y":10,
       "w":10,
       "h":10,
+      "bg":false,
       "mat":"dirt"
     },
     {
-      "x":30,
+      "name":"A rock",
+      "x":40,
       "y":30,
-      "w":5,
-      "h":1,
-      "mat":"dirt"
+      "w":10,
+      "h":10,
+      "mat":"stone"
+    },
+    {
+      "name": "first cloud",
+      "x":5,
+      "y":5,
+      "w":10,
+      "h":2,
+      "bg":true,
+      "mat":"cloud"
+    },
+    {
+      "name": "second cloud",
+      "x":70,
+      "y":10,
+      "w":10,
+      "h":2,
+      "bg":true,
+      "mat":"cloud"
+    },
+    {
+      "name": "third cloud",
+      "x":35,
+      "y":15,
+      "w":20,
+      "h":2,
+      "bg":true,
+      "mat":"cloud"
     }
   ]
 }

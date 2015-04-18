@@ -3,24 +3,20 @@ from pygame.locals import *
 from custom_exceptions import *
 
 from level import Level
-from character import Character
+from actor import Actor
 from input_manager import InputManager, Actions
 from physics_manager import PhysicsManager
 
 class GameInstance(object):
-    def __init__(self, config, levelName):
+    def __init__(self, config, level_name):
         self.config = config
         self.input_manager = InputManager()
-        self.level = Level("{0}/{1}.lvl".format(config["levels_dir"], levelName))
+        self.physics_manager = PhysicsManager()
+        self.level = Level("{0}/{1}.lvl".format(config["levels_dir"], level_name), self.physics_manager)
 
-        self.main_char = Character.genMainCharacter()
-        otherChar = Character.genMainCharacter()
+        self.main_char = Actor.genMainCharacter()
 
-        self.characters = [self.main_char, otherChar]
-        self.physics_manager = PhysicsManager(self.level.width, self.level.height)
-        self.physics_manager.add_actor(self.main_char, has_gravity=True)
-        self.physics_manager.add_actor(otherChar, has_gravity=True)
-        self.physics_manager.set_position(otherChar, (20, 5))
+        self.physics_manager.add_actor(self.main_char, weight=3)
 
     def doFrame(self, screen, delta):
         tile_size = screen.get_width() / self.level.width
@@ -42,11 +38,13 @@ class GameInstance(object):
 
         self.physics_manager.update(delta, tile_size)
 
-        for character in self.characters:
-            character.update(delta, tile_size)
+        self.main_char.update(delta, tile_size)
+        for actor in self.level.actors:
+            actor.update(delta, tile_size)
 
         self.level.update(tile_size)
 
         screen.blit(self.level.surface, (0,0))
-        for character in self.characters:
-            screen.blit(character.surface, character.position)
+        screen.blit(self.main_char.surface, self.main_char.position)
+        for actor in self.level.actors:
+            screen.blit(actor.surface, actor.position)

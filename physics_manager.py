@@ -8,6 +8,7 @@ class PhysicsAttributes:
         self.position = [0.0,0.0]
         self.velocity = [0.0, 0.0]
         self.acceleration = [0.0, 0.0]
+        self.weight = 0
 
     def get_rect(self):
         return pygame.Rect(self.position[0], self.position[1], self.width, self.height)
@@ -16,24 +17,20 @@ class PhysicsAttributes:
 
 X = 0
 Y = 1
+GRAVITY = 9.8
 
 class PhysicsManager(object):
     _actors = {}
-    _worldWidth, _worldHeight = None, None
+    world_width, world_height = None, None
     _collision_precision = 100
 
     UNITS_PER_TILE = 10
 
-    def __init__(self, worldWidth, worldHeight):
-        self._worldWidth = worldWidth
-        self._worldHeight = worldHeight
-
-    def add_actor(self, actor, has_gravity=False):
+    def add_actor(self, actor, weight=False):
         self._actors[actor] = PhysicsAttributes()
         self._actors[actor].width = actor.widthInTiles
         self._actors[actor].height = actor.heightInTiles
-        if has_gravity:
-            self._actors[actor].acceleration[Y] = 9.8 #units/second
+        self._actors[actor].weight = weight
 
     def remove_actor(self, actor):
         self._actors[actor] = None
@@ -61,6 +58,8 @@ class PhysicsManager(object):
         collision_detector = CollisionDetector(self._actors, self._collision_precision)
 
         for actor, attributes in self._actors.iteritems():
+            if attributes.weight != 0:
+                attributes.acceleration[Y] = GRAVITY
             attributes.velocity[X] += delta * attributes.acceleration[X] #every frame, we update the velocity based on how fast it is changing
             attributes.velocity[Y] += delta * attributes.acceleration[Y]
 
@@ -68,8 +67,8 @@ class PhysicsManager(object):
             if(attributes.position[Y] < 0):
                 attributes.position[Y] = 0
                 attributes.velocity[Y] = 0
-            elif(attributes.position[Y] > self._worldHeight - attributes.height):
-                attributes.position[Y] = self._worldHeight - attributes.height
+            elif(attributes.position[Y] > self.world_height - attributes.height):
+                attributes.position[Y] = self.world_height - attributes.height
                 attributes.velocity[Y] = 0
             if attributes.velocity[Y] != 0:
                 collision_detector.handle_collisions_y(actor)
@@ -77,8 +76,8 @@ class PhysicsManager(object):
             attributes.position[X] += delta * attributes.velocity[X] * self.UNITS_PER_TILE
             if(attributes.position[X] < 0):
                 attributes.position[X] = 0
-            elif(attributes.position[X] > self._worldWidth - attributes.width):
-                attributes.position[X] = self._worldWidth - attributes.width
+            elif(attributes.position[X] > self.world_width - attributes.width):
+                attributes.position[X] = self.world_width - attributes.width
             if attributes.velocity[X] != 0:
                 collision_detector.handle_collisions_x(actor)
 
