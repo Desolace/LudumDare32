@@ -11,6 +11,9 @@ class TransmutationManager(object):
     def blow(self):
         pass
 
+    def get_points(self):
+        return self._points
+
     def update(self, delta):
         for actor in self._sucking:
             new_tiles_removed = actor.total_tile_count - len(actor.tiles_to_dissolve)
