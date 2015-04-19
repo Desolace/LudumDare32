@@ -1,5 +1,8 @@
 import pygame
 
+"""
+Monitors the users mouse and their selections
+"""
 class PickingHandler(object):
     SUCCESS_COLOR = (0,0,255)
     ERROR_COLOR = (255,0,0)
@@ -55,7 +58,7 @@ class PickingHandler(object):
                     abs(self._user_selection_bound2[1] - self._user_selection_bound1[1]) * tile_size
                     ))
                 self.selection_surface.set_alpha(150)
-                if self.get_points_used(tile_size) > self.transmutation_manager.get_points():
+                if self.get_points_used(tile_size) > self.transmutation_manager.current_points:
                     self.selection_surface.fill(PickingHandler.ERROR_COLOR)
                     self._user_selection_bounds = None
                 else:

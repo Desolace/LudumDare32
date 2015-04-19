@@ -45,7 +45,7 @@ class Actor(object):
         if self._is_dissolving:
             if len(self.tiles_to_dissolve) > 0:
                 percent_to_dissolve = delta / Actor.DISSOLVE_DURATION_SECONDS
-                num_tiles_to_dissolve = int(math.ceil(self.total_tile_count * percent_to_dissolve))
+                num_tiles_to_dissolve = min(int(math.ceil(self.total_tile_count * percent_to_dissolve)), len(self.tiles_to_dissolve))
 
                 to_dissolve = random.sample(self.tiles_to_dissolve, num_tiles_to_dissolve)
                 for tile in to_dissolve:
