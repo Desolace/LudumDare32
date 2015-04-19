@@ -32,6 +32,24 @@ screens = {
     "complete":screens.CompleteScreen(config)
 }
 
+main_menu = menu.MainMenu(config, enabled=True)
+
+while True:
+    events = input_manager.get_active_events()
+
+    #user closes the game
+    if Actions.QUIT in events:
+        pygame.quit()
+        sys.exit()
+    elif Actions.START_GAME in events:
+        break
+
+    clock.tick(config["fps"])
+    delta = clock.get_time() / 1000.0
+
+    main_menu.doFrame(surface, delta, events)
+    pygame.display.update()
+
 paused = False
 
 while True:
