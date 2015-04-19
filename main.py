@@ -5,6 +5,7 @@ from custom_exceptions import UserQuitException
 import json
 from sounds import SoundManager
 from input_manager import InputManager, Actions
+import screens
 
 from game_instance import GameInstance
 
@@ -26,6 +27,10 @@ try:
     clock = pygame.time.Clock()
     input_manager = InputManager()
 
+    screens = {
+        "pause":screens.PauseScreen()
+    }
+
     paused = False
 
     while True:
@@ -39,6 +44,7 @@ try:
 
         if paused:
             game.doFrame(surface, 0, [])
+            screens["pause"].doFrame(surface, delta, [])
         else:
             game.doFrame(surface, delta, events)
 
