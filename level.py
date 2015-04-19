@@ -2,6 +2,9 @@ import json
 import pygame
 from actor import Actor
 
+"""
+An instance of the given level. Handles creation of all static actors in the level.
+"""
 class Level(object):
 
     def __init__(self, level_name, physics_manager, material_manager):
@@ -31,7 +34,10 @@ class Level(object):
                     physics_manager.set_position(new_actor, (item['x'], item['y']))
                     self.actors.append(new_actor)
 
-    def update(self, tile_size):
+    """
+    Updates all internal actors and handles removing dissolved ones.
+    """
+    def update(self, delta, tile_size):
         if(tile_size != self._tile_size):
             self.surface = pygame.transform.scale(self.surface, (self.width * tile_size, self.height * tile_size))
             self._tile_size = tile_size
@@ -40,3 +46,6 @@ class Level(object):
         for actor in dissolved_actors:
             self.actors.remove(actor)
             self.physics_manager.remove_actor(actor)
+
+        for actor in self.actors:
+            actor.update(delta, tile_size)

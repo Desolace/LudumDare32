@@ -11,6 +11,9 @@ from sounds import SoundManager
 from transmutation_manager import TransmutationManager
 from material_manager import MaterialManager
 
+"""
+Manages all state for a given run of a level
+"""
 class GameInstance(object):
 
     def __init__(self, config, level_name):
@@ -29,7 +32,16 @@ class GameInstance(object):
         self._highlight_actors = False
         self.userSounds = SoundManager()
 
+    """
+    Internally sets and returns the tilesize required to display on the given screen
+    """
+    def _recalc_tilesize(self, screen):
+        self.tile_size = screen.get_width() / self.level.width
+        return self.tile_size
 
+    """
+    Clears the event queue and performs associated actions for the existing events
+    """
     def _handle_events(self):
         for event in self.input_manager.eventQueue():
             if event == Actions.QUIT:
@@ -66,20 +78,20 @@ class GameInstance(object):
             elif event == Actions.STOP_DISSOLVE_SELECTION:
                 self._highlight_actors = False
 
-    def _recalc_tilesize(self, screen):
-        self.tile_size = screen.get_width() / self.level.width
-
+    """
+    Updates all game objects and manager systems based on the frame time delta
+    """
     def _handle_updates(self, delta):
         self.physics_manager.update(delta, self.tile_size)
         self.picking_handler.update(delta, self.tile_size)
         self.transmutation_manager.update(delta)
 
         self.main_char.update(delta, self.tile_size)
-        for actor in self.level.actors:
-            actor.update(delta, self.tile_size)
+        self.level.update(delta, self.tile_size)
 
-        self.level.update(self.tile_size)
-
+    """
+    Renders all game objects to the screen
+    """
     def _render(self, screen):
         mouse_position = pygame.mouse.get_pos()
         screen.blit(self.level.surface, (0,0))
@@ -91,6 +103,9 @@ class GameInstance(object):
 
         screen.blit(self.picking_handler.surface, self.picking_handler.position)
 
+    """
+    Handle events, update game state, and render to the given screen
+    """
     def doFrame(self, screen, delta):
         self._recalc_tilesize(screen)
         self._handle_events()
