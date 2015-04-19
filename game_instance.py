@@ -46,9 +46,7 @@ class GameInstance(object):
 
             event_name = event if isinstance(event, int) else event[0]
 
-            if event_name == Actions.QUIT:
-                raise UserQuitException()
-            elif event_name == Actions.START_USER_LEFT:
+            if event_name == Actions.START_USER_LEFT:
                 self.physics_manager.add_velocity_x(self.main_char, -self.config["user_motion_speed"])
                 self.userSounds.start_cont_effect('run')
             elif event_name == Actions.START_USER_RIGHT:

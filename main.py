@@ -18,50 +18,50 @@ config_handle = open(SETTINGS_FILE, "r")
 config = json.load(config_handle)
 config_handle.close()
 
-try:
-    pygame.init()
-    pygame.display.set_caption(config["title"])
-    pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=4096)
-    surface = pygame.display.set_mode((config["width"], config["height"]))
-    game = GameInstance(config, "first")
-    clock = pygame.time.Clock()
-    input_manager = InputManager()
+pygame.init()
+pygame.display.set_caption(config["title"])
+pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=4096)
+surface = pygame.display.set_mode((config["width"], config["height"]))
+game = GameInstance(config, "first")
+clock = pygame.time.Clock()
+input_manager = InputManager()
 
-    screens = {
-        "pause":screens.PauseScreen(config),
-        "inventory":menu.InventoryMenu(config)
-    }
+screens = {
+    "pause":screens.PauseScreen(config),
+    "inventory":menu.InventoryMenu(config)
+}
 
-    paused = False
+paused = False
 
-    while True:
-        events = input_manager.get_active_events()
+while True:
+    events = input_manager.get_active_events()
 
-        #toggle relevent ui screens
-        if Actions.TOGGLE_PAUSE in events:
-            paused = not paused
-            screens["pause"].enabled = not screens["pause"].enabled
-        elif Actions.TOGGLE_INVENTORY in events:
-            paused = not paused
-            screens["pause"].enabled = not screens["pause"].enabled
-            screens["inventory"].enabled = not screens["inventory"].enabled
+    #user closes the game
+    if Actions.QUIT in events:
+        pygame.quit()
+        sys.exit()
 
-        clock.tick(config["fps"])
-        delta = clock.get_time() / 1000.0
+    #toggle relevent ui screens
+    if Actions.TOGGLE_PAUSE in events:
+        paused = not paused
+        screens["pause"].enabled = not screens["pause"].enabled
+    elif Actions.TOGGLE_INVENTORY in events:
+        paused = not paused
+        screens["pause"].enabled = not screens["pause"].enabled
+        screens["inventory"].enabled = not screens["inventory"].enabled
 
-        #render the game field, a delta of 0 means don't do any physics updates, events of [] means dont perform any inputs
-        if paused:
-            game.doFrame(surface, 0, [])
-        else:
-            game.doFrame(surface, delta, events)
+    clock.tick(config["fps"])
+    delta = clock.get_time() / 1000.0
 
-        #display any active ui screens
-        for screen in screens.itervalues():
-            screen.doFrame(surface, delta, events)
+    #render the game field, a delta of 0 means don't do any physics updates, events of [] means dont perform any inputs
+    if paused:
+        game.doFrame(surface, 0, [])
+    else:
+        game.doFrame(surface, delta, events)
 
-        #give it to the user
-        pygame.display.update()
+    #display any active ui screens
+    for screen in screens.itervalues():
+        screen.doFrame(surface, delta, events)
 
-except UserQuitException:
-    pygame.quit()
-    sys.exit()
+    #give it to the user
+    pygame.display.update()
