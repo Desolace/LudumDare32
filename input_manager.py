@@ -24,10 +24,12 @@ class Actions(object):
     USER_MENU_CLICK=17
 
     CHOOSE_MATERIAL=18
+    GAME_WON=19
 
 class CustomEvents:
     CHOOSEMAT=USEREVENT+1
     CLOSEINV=USEREVENT+2
+    USERWINS=USEREVENT+3
 
 class InputManager(object):
     def __init__(self):
@@ -44,6 +46,8 @@ class InputManager(object):
             elif not self._paused:
                 if event.type == CustomEvents.CHOOSEMAT:
                     actions.append((Actions.CHOOSE_MATERIAL, event.name))
+                elif event.type == CustomEvents.USERWINS:
+                    actions.append((Actions.GAME_WON))
 
                 elif event.type == KEYDOWN:
                     if event.key == K_UP:

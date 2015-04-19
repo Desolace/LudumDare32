@@ -4,7 +4,7 @@ from custom_exceptions import *
 
 from level import Level
 from actor import Actor
-from input_manager import Actions
+from input_manager import Actions, CustomEvents
 from physics_manager import PhysicsManager
 from picking_handler import PickingHandler
 from sounds import SoundManager
@@ -112,4 +112,8 @@ class GameInstance(object):
         self._recalc_tilesize(screen)
         self._handle_events(events)
         self._handle_updates(delta)
+
+        if self.level.is_player_at_goal(self.main_char):
+            pygame.event.post(pygame.event.Event(CustomEvents.USERWINS))
+
         self._render(screen)
