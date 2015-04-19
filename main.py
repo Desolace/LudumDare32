@@ -28,8 +28,8 @@ try:
     input_manager = InputManager()
 
     screens = {
-        "pause":screens.PauseScreen(),
-        "inventory":menu.InventoryMenu()
+        "pause":screens.PauseScreen(config),
+        "inventory":menu.InventoryMenu(config)
     }
 
     paused = False

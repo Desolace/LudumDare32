@@ -4,7 +4,7 @@ PAUSE_COLOR = (0,0,0)
 PAUSE_ALPHA = 150
 
 class PauseScreen(object):
-    def __init__(self):
+    def __init__(self, config):
         self.enabled = False
 
     def doFrame(self, screen, delta, events):

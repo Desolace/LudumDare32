@@ -21,6 +21,8 @@ class Actions(object):
     TOGGLE_PAUSE=15
     TOGGLE_INVENTORY=16
 
+    USER_MENU_CLICK=17
+
 class InputManager(object):
     def __init__(self):
         self._paused = False
@@ -108,5 +110,8 @@ class InputManager(object):
                         self._state.remove(Actions.TOGGLE_PAUSE)
                         actions.append(Actions.TOGGLE_PAUSE)
                         self._paused = False
+                elif event.type == MOUSEBUTTONUP:
+                    if event.button == 1:
+                        actions.append((Actions.USER_MENU_CLICK, event.pos))
 
         return actions
