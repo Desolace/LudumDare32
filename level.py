@@ -8,6 +8,8 @@ An instance of the given level. Handles creation of all static actors in the lev
 class Level(object):
 
     def __init__(self, level_name, physics_manager, material_manager):
+        self.goal = None
+
         with open(level_name, "r") as levelData:
             self._level_def = json.load(levelData)
             self.width = self._level_def['w']
@@ -30,9 +32,18 @@ class Level(object):
                 else: #its an actor in the world
                     new_actor = Actor(material.surface, item['w'], item['h'])
                     new_actor.points_per_tile = material.point_value
-                    physics_manager.add_actor(new_actor, weight=material.weight)
+                    physics_manager.add_actor(new_actor, weight=material.weight, collidable=material.collidable)
                     physics_manager.set_position(new_actor, (item['x'], item['y']))
                     self.actors.append(new_actor)
+
+                    if item.get("goal"): #this is the level end goal point
+                        self.goal = new_actor
+
+        if self.goal is None:
+            raise Exception("LvlError: A goal is required for each level.")
+
+    def is_player_at_goal(self, player):
+        return self.goal.get_rect().contains(player.get_rect())
 
     """
     Updates all internal actors and handles removing dissolved ones.

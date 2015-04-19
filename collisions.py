@@ -10,8 +10,9 @@ class CollisionDetector(object):
 
     def _get_collisions(self, actor):
         actorRect = self._actors[actor].get_scaled_rect(self._precision)
+
         for otherActor, otherAttributes in self._actors.iteritems():
-            if actor != otherActor and actorRect.colliderect(otherAttributes.get_scaled_rect(self._precision)):
+            if actor != otherActor and otherAttributes.collidable and actorRect.colliderect(otherAttributes.get_scaled_rect(self._precision)):
                 yield otherActor
 
     def _clips_top(self, rect, top_edge):
@@ -53,9 +54,11 @@ class CollisionDetector(object):
                 self._actors[movingActor].position[Y] = (blockingRect.bottom / self._precision)
 
     def handle_collisions_x(self, actor):
-        for collision in self._get_collisions(actor):
-            self._snap_x(actor, collision)
+        if self._actors[actor].collidable:
+            for collision in self._get_collisions(actor):
+                self._snap_x(actor, collision)
 
     def handle_collisions_y(self, actor):
-        for collision in self._get_collisions(actor):
-            self._snap_y(actor, collision)
+        if self._actors[actor].collidable:
+            for collision in self._get_collisions(actor):
+                self._snap_y(actor, collision)

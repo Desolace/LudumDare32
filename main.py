@@ -28,7 +28,8 @@ input_manager = InputManager()
 
 screens = {
     "pause":screens.PauseScreen(config),
-    "inventory":menu.InventoryMenu(config)
+    "inventory":menu.InventoryMenu(config),
+    "complete":screens.CompleteScreen(config)
 }
 
 paused = False
@@ -40,9 +41,11 @@ while True:
     if Actions.QUIT in events:
         pygame.quit()
         sys.exit()
-
+    elif Actions.GAME_WON in events:
+        paused = True
+        screens["complete"].enabled = True
     #toggle relevent ui screens
-    if Actions.TOGGLE_PAUSE in events:
+    elif Actions.TOGGLE_PAUSE in events:
         paused = not paused
         screens["pause"].enabled = not screens["pause"].enabled
     elif Actions.TOGGLE_INVENTORY in events:

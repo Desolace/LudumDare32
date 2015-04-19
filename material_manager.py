@@ -2,10 +2,11 @@ import json
 from pygame import Surface
 
 class Material(object):
-    def __init__(self, surface, point_value, weight):
+    def __init__(self, surface, point_value, weight, collidable):
         self.surface = surface
         self.point_value = point_value
         self.weight = weight
+        self.collidable = collidable
 
 class MaterialManager(object):
     def __init__(self, definitions_filename):
@@ -19,4 +20,4 @@ class MaterialManager(object):
         else:
             surface = Surface(size)
             surface.fill(tuple(definition["color"]))
-            return Material(surface, definition["point_value"], definition["weight"])
+            return Material(surface, definition["point_value"], definition["weight"], definition.get("collidable", True))

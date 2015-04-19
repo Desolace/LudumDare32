@@ -23,9 +23,10 @@ class TransmutationManager(object):
     Begin destruction of the given actor, the next update after full destruction will finish the job
     """
     def suck(self, actor):
-        actor.start_dissolving()
-        self._sucking.append(actor)
-        self._tiles_removed[actor] = 0
+        if actor.points_per_tile > 0:
+            actor.start_dissolving()
+            self._sucking.append(actor)
+            self._tiles_removed[actor] = 0
 
     """
     Create an object if we have enough points, and return it. The object is not placed into the world here.
@@ -33,10 +34,10 @@ class TransmutationManager(object):
     def blow(self, rect, tile_size):
         material = self.material_manager.get_material(self.blow_key, (rect.width, rect.height))
         actor = Actor(material.surface, rect.width / tile_size, rect.height / tile_size)
-        actor.point_value = material.point_value
+        actor.points_per_tile = material.point_value
 
         points_used = material.point_value * actor.widthInTiles * actor.heightInTiles
-        
+
         if points_used <= self.current_points:
             self.current_points -= points_used
             return (actor, (rect.left / tile_size, rect.top / tile_size), material.weight)

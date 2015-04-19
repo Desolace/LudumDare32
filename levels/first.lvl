@@ -42,6 +42,15 @@
       "w":20,
       "h":2,
       "mat":"cloud"
+    },
+    {
+      "name":"goal",
+      "x":85,
+      "y":5,
+      "w":10,
+      "h":10,
+      "mat":"light",
+      "goal":true
     }
   ]
 }

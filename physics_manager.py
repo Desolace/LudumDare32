@@ -8,6 +8,7 @@ class PhysicsAttributes:
         self.position = [0.0,0.0]
         self.velocity = [0.0, 0.0]
         self.acceleration = [0.0, 0.0]
+        self.collidable = True
         self.weight = 0
 
     def get_rect(self):
@@ -26,11 +27,12 @@ class PhysicsManager(object):
 
     UNITS_PER_TILE = 10
 
-    def add_actor(self, actor, weight=False):
+    def add_actor(self, actor, weight=False, collidable=True):
         self._actors[actor] = PhysicsAttributes()
         self._actors[actor].width = actor.widthInTiles
         self._actors[actor].height = actor.heightInTiles
         self._actors[actor].weight = weight
+        self._actors[actor].collidable = collidable
 
     def remove_actor(self, actor):
         del self._actors[actor]
