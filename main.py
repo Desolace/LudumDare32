@@ -4,6 +4,7 @@ from pygame.locals import *
 from custom_exceptions import UserQuitException
 import json
 from sounds import SoundManager
+from input_manager import InputManager, Actions
 
 from game_instance import GameInstance
 
@@ -23,11 +24,24 @@ try:
     surface = pygame.display.set_mode((config["width"], config["height"]))
     game = GameInstance(config, "first")
     clock = pygame.time.Clock()
+    input_manager = InputManager()
+
+    paused = False
 
     while True:
+        events = input_manager.get_active_events()
+
+        if Actions.TOGGLE_PAUSE in events:
+            paused = not paused
+
         clock.tick(config["fps"])
         delta = clock.get_time() / 1000.0
-        game.doFrame(surface, delta)
+
+        if paused:
+            game.doFrame(surface, 0, [])
+        else:
+            game.doFrame(surface, delta, events)
+
         pygame.display.update()
 
 except UserQuitException:
