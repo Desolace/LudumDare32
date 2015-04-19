@@ -77,6 +77,8 @@ class GameInstance(object):
                 self._highlight_actors = True
             elif event_name == Actions.STOP_DISSOLVE_SELECTION:
                 self._highlight_actors = False
+            elif event_name == Actions.CHOOSE_MATERIAL:
+                self.transmutation_manager.blow_key = event[1]
 
     """
     Updates all game objects and manager systems based on the frame time delta

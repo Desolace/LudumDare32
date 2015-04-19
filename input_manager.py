@@ -23,6 +23,12 @@ class Actions(object):
 
     USER_MENU_CLICK=17
 
+    CHOOSE_MATERIAL=18
+
+class CustomEvents:
+    CHOOSEMAT=USEREVENT+1
+    CLOSEINV=USEREVENT+2
+
 class InputManager(object):
     def __init__(self):
         self._paused = False
@@ -36,7 +42,10 @@ class InputManager(object):
             if event.type == QUIT or (event.type == KEYDOWN and (event.key == K_q or event.key == K_ESCAPE)):
                 actions.append(Actions.QUIT)
             elif not self._paused:
-                if event.type == KEYDOWN:
+                if event.type == CustomEvents.CHOOSEMAT:
+                    actions.append((Actions.CHOOSE_MATERIAL, event.name))
+
+                elif event.type == KEYDOWN:
                     if event.key == K_UP:
                         self._state.append(Actions.START_USER_UP)
                         actions.append(Actions.START_USER_UP)
@@ -101,6 +110,10 @@ class InputManager(object):
                 elif event.type == USEREVENT:
                     actions.append((Actions.USER_BLOW, event.bounds))
             elif self._paused:
+                if event.type == CustomEvents.CLOSEINV and Actions.TOGGLE_INVENTORY in self._state:
+                    self._state.remove(Actions.TOGGLE_INVENTORY)
+                    actions.append(Actions.TOGGLE_INVENTORY)
+                    self._paused = False
                 if event.type == KEYDOWN:
                     if event.key == K_i and Actions.TOGGLE_INVENTORY in self._state:
                         self._state.remove(Actions.TOGGLE_INVENTORY)
