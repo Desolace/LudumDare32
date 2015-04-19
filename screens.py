@@ -1,11 +1,15 @@
 import pygame
 
+"""
+Screens are statically rendered with no interactivity
+"""
+
 PAUSE_COLOR = (0,0,0)
 PAUSE_ALPHA = 150
 
 class PauseScreen(object):
-    def __init__(self, config):
-        self.enabled = False
+    def __init__(self, config, enabled=False):
+        self.enabled = enabled
 
     def doFrame(self, screen, delta, events):
         if self.enabled:
@@ -18,8 +22,8 @@ COMPLETE_COLOR = (0, 255, 0)
 COMPLETE_ALPHA = 150
 
 class CompleteScreen(object):
-    def __init__(self, config):
-        self.enabled = False
+    def __init__(self, config, enabled=False):
+        self.enabled = enabled
 
     def doFrame(self, screen, delta, events):
         if self.enabled:

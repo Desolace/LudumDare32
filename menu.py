@@ -3,11 +3,40 @@ from material_manager import MaterialManager
 from actor import Actor
 from input_manager import Actions, CustomEvents
 
+"""
+Menus are like screens, but interactive!
+"""
+MAIN_MENU_BG_COLOR = (0, 0, 0)
+
+class MainMenu(object):
+    def __init__(self, config, enabled=False):
+        self.enabled = enabled
+        self._go_button = pygame.Surface((100, 100))
+        pygame.draw.circle(self._go_button, (0, 255, 0), (50, 50), 50)
+
+    def _handle_events(self, events):
+        for event in events:
+            event_name = event if isinstance(event, int) else event[0]
+            print event_name
+            if event_name == Actions.USER_MENU_CLICK:
+                go_rect = self._go_button.get_rect().move(self._go_button_position)
+                if go_rect.collidepoint(event[1]):
+                    pygame.event.post(pygame.event.Event(CustomEvents.STARTBUTTONCLICK))
+
+    def doFrame(self, screen, delta, events):
+        if self.enabled:
+            self._go_button_position = ((screen.get_width() / 2 - 50), (screen.get_height() / 2 - 50))
+            self._handle_events(events)
+
+            screen.fill(MAIN_MENU_BG_COLOR)
+
+            screen.blit(self._go_button, self._go_button_position)
+
 INV_HIGHLIGHT_COLOR = (0,0,0)
 
 class InventoryMenu(object):
-    def __init__(self, config):
-        self.enabled = False
+    def __init__(self, config, enabled=False):
+        self.enabled = enabled
         self.material_manager = MaterialManager(config["material_file"])
 
         dirt = self.material_manager.get_material("dirt", (50,50))
