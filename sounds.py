@@ -20,14 +20,14 @@ class SoundManager(object):
             print "error"
             
     def play_one_sound_effect(self,effect):
+        print "a"
         effectFilename = ''
         if effect == "jump":
             effectFilename = 'sounds/jump.wav'
         try:
             soundEffect = pygame.mixer.Sound(effectFilename)
             soundEffect.play(loops = 0)
-        except:
-            e = sys.exc_info()[0]
+        except Exception as e:
             print e
 
     def start_cont_effect(self,effect):
@@ -39,7 +39,7 @@ class SoundManager(object):
                 try:
                     self.contEffect = pygame.mixer.Sound(contFilename)
                     self.contEffect.play(loops = -1)
-                except NameError as e:
+                except Exception as e:
                     print e
 
     def stop_cont_effect(self,effect):
@@ -47,5 +47,5 @@ class SoundManager(object):
             self.soundList[effect] -= 1
             if self.soundList[effect] == 0:
                 self.contEffect.stop()
-        except NameError as e:
+        except Exception as e:
             print e

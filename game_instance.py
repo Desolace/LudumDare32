@@ -11,7 +11,7 @@ from sounds import SoundManager
 from transmutation_manager import TransmutationManager
 
 class GameInstance(object):
-    
+
     def __init__(self, config, level_name):
         self.config = config
         self.input_manager = InputManager()
@@ -26,14 +26,17 @@ class GameInstance(object):
         self._highlight_actors = False
         self.userSounds = SoundManager()
 
+
+    def _handle_dissolving(self, position):
+        [self.transmutation_manager.suck(actor) for actor in self.level.actors if self.picking_handler.is_picked(actor, position)]
+
     def _handle_spawning(self, position):
         pass
 
     def doFrame(self, screen, delta):
         tile_size = screen.get_width() / self.level.width
-        
+
         for event in self.input_manager.eventQueue():
-            
             if event == Actions.QUIT:
                 raise UserQuitException()
             elif event == Actions.START_USER_LEFT:
