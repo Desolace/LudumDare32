@@ -3,6 +3,8 @@ from material_manager import MaterialManager
 from actor import Actor
 from input_manager import Actions, CustomEvents
 
+INV_HIGHLIGHT_COLOR = (0,0,0)
+
 class InventoryMenu(object):
     def __init__(self, config):
         self.enabled = False
@@ -41,8 +43,16 @@ class InventoryMenu(object):
 
             self._handle_events(events)
 
+            mouse_pos = pygame.mouse.get_pos()
+
             for actor in self.actors:
                 actor.update(delta, 10)
                 self.surface.blit(actor.surface, actor.position)
+
+                #highlight it if the mouse is on top
+                rect = actor.get_rect()
+                rect.move_ip(self.surface_position)
+                if rect.collidepoint(mouse_pos):
+                    pygame.draw.rect(self.surface, INV_HIGHLIGHT_COLOR, actor.get_rect(), 2)
 
             screen.blit(self.surface, self.surface_position)
