@@ -19,6 +19,7 @@ class Actions(object):
     STOP_DISSOLVE_SELECTION=12
 
     TOGGLE_PAUSE=15
+    TOGGLE_INVENTORY=16
 
 class InputManager(object):
     def __init__(self):
@@ -32,9 +33,6 @@ class InputManager(object):
             #User quits
             if event.type == QUIT or (event.type == KEYDOWN and (event.key == K_q or event.key == K_ESCAPE)):
                 actions.append(Actions.QUIT)
-            elif event.type == KEYDOWN and event.key == K_p:
-                self._paused = not self._paused
-                actions.append(Actions.TOGGLE_PAUSE)
             elif not self._paused:
                 if event.type == KEYDOWN:
                     if event.key == K_UP:
@@ -52,6 +50,14 @@ class InputManager(object):
                     elif event.key == K_LCTRL or event.key == K_RCTRL:
                         self._state.append(Actions.START_DISSOLVE_SELECTION)
                         actions.append(Actions.START_DISSOLVE_SELECTION)
+                    elif event.key == K_i: #show inventory
+                        self._state.append(Actions.TOGGLE_INVENTORY)
+                        actions.append(Actions.TOGGLE_INVENTORY)
+                        self._paused = True
+                    elif event.key == K_p: #pause the game
+                        self._state.append(Actions.TOGGLE_PAUSE)
+                        actions.append(Actions.TOGGLE_PAUSE)
+                        self._paused = True
 
                 elif event.type == KEYUP:
                     if event.key == K_UP:
@@ -92,5 +98,15 @@ class InputManager(object):
 
                 elif event.type == USEREVENT:
                     actions.append((Actions.USER_BLOW, event.bounds))
+            elif self._paused:
+                if event.type == KEYDOWN:
+                    if event.key == K_i and Actions.TOGGLE_INVENTORY in self._state:
+                        self._state.remove(Actions.TOGGLE_INVENTORY)
+                        actions.append(Actions.TOGGLE_INVENTORY)
+                        self._paused = False
+                    elif event.key == K_p and Actions.TOGGLE_PAUSE in self._state:
+                        self._state.remove(Actions.TOGGLE_PAUSE)
+                        actions.append(Actions.TOGGLE_PAUSE)
+                        self._paused = False
 
         return actions

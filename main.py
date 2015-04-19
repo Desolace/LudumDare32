@@ -5,7 +5,7 @@ from custom_exceptions import UserQuitException
 import json
 from sounds import SoundManager
 from input_manager import InputManager, Actions
-import screens
+import screens, menu
 
 from game_instance import GameInstance
 
@@ -28,7 +28,8 @@ try:
     input_manager = InputManager()
 
     screens = {
-        "pause":screens.PauseScreen()
+        "pause":screens.PauseScreen(),
+        "inventory":menu.InventoryMenu()
     }
 
     paused = False
@@ -36,18 +37,29 @@ try:
     while True:
         events = input_manager.get_active_events()
 
+        #toggle relevent ui screens
         if Actions.TOGGLE_PAUSE in events:
             paused = not paused
+            screens["pause"].enabled = not screens["pause"].enabled
+        elif Actions.TOGGLE_INVENTORY in events:
+            paused = not paused
+            screens["pause"].enabled = not screens["pause"].enabled
+            screens["inventory"].enabled = not screens["inventory"].enabled
 
         clock.tick(config["fps"])
         delta = clock.get_time() / 1000.0
 
+        #render the game field, a delta of 0 means don't do any physics updates, events of [] means dont perform any inputs
         if paused:
             game.doFrame(surface, 0, [])
-            screens["pause"].doFrame(surface, delta, [])
         else:
             game.doFrame(surface, delta, events)
 
+        #display any active ui screens
+        for screen in screens.itervalues():
+            screen.doFrame(surface, delta, events)
+
+        #give it to the user
         pygame.display.update()
 
 except UserQuitException:
