@@ -7,9 +7,11 @@ from actor import Actor
 from input_manager import InputManager, Actions
 from physics_manager import PhysicsManager
 from picking_handler import PickingHandler
+from sounds import SoundManager
 from transmutation_manager import TransmutationManager
 
 class GameInstance(object):
+
     def __init__(self, config, level_name):
         self.config = config
         self.input_manager = InputManager()
@@ -22,6 +24,11 @@ class GameInstance(object):
 
         self.physics_manager.add_actor(self.main_char, weight=3)
         self._highlight_actors = False
+        self.userSounds = SoundManager()
+
+
+    def _handle_dissolving(self, position):
+        [self.transmutation_manager.suck(actor) for actor in self.level.actors if self.picking_handler.is_picked(actor, position)]
 
     def _handle_spawning(self, position):
         pass
@@ -34,15 +41,20 @@ class GameInstance(object):
                 raise UserQuitException()
             elif event == Actions.START_USER_LEFT:
                 self.physics_manager.add_velocity_x(self.main_char, -self.config["user_motion_speed"])
+                self.userSounds.start_cont_effect('run')
             elif event == Actions.START_USER_RIGHT:
                 self.physics_manager.add_velocity_x(self.main_char, self.config["user_motion_speed"])
+                self.userSounds.start_cont_effect('run')
             elif event == Actions.START_USER_UP:
                 if self.physics_manager.get_velocity_y(self.main_char) == 0:
                     self.physics_manager.add_velocity_y(self.main_char, -self.config["user_jump_speed"])
+                    self.userSounds.play_one_sound_effect('jump')
             elif event == Actions.STOP_USER_LEFT:
                 self.physics_manager.add_velocity_x(self.main_char, self.config["user_motion_speed"])
+                self.userSounds.stop_cont_effect('run')
             elif event == Actions.STOP_USER_RIGHT:
                 self.physics_manager.add_velocity_x(self.main_char, -self.config["user_motion_speed"])
+                self.userSounds.stop_cont_effect('run')
             elif event == Actions.USER_SUCK:
                 [self.transmutation_manager.suck(actor) for actor in self.level.actors if self.picking_handler.is_picked(actor, self.input_manager.last_click_position)]
             elif event == Actions.USER_BLOW:
