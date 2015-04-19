@@ -4,7 +4,7 @@ from custom_exceptions import *
 
 from level import Level
 from actor import Actor
-from input_manager import InputManager, Actions
+from input_manager import Actions
 from physics_manager import PhysicsManager
 from picking_handler import PickingHandler
 from sounds import SoundManager
@@ -18,7 +18,6 @@ class GameInstance(object):
 
     def __init__(self, config, level_name):
         self.config = config
-        self.input_manager = InputManager()
         self.physics_manager = PhysicsManager()
         self.material_manager = MaterialManager(config["material_file"])
         self.transmutation_manager = TransmutationManager(self.material_manager)
@@ -42,41 +41,44 @@ class GameInstance(object):
     """
     Clears the event queue and performs associated actions for the existing events
     """
-    def _handle_events(self):
-        for event in self.input_manager.eventQueue():
-            if event == Actions.QUIT:
-                raise UserQuitException()
-            elif event == Actions.START_USER_LEFT:
+    def _handle_events(self, events):
+        for event in events:
+
+            event_name = event if isinstance(event, int) else event[0]
+
+            if event_name == Actions.START_USER_LEFT:
                 self.physics_manager.add_velocity_x(self.main_char, -self.config["user_motion_speed"])
                 self.userSounds.start_cont_effect('run')
-            elif event == Actions.START_USER_RIGHT:
+            elif event_name == Actions.START_USER_RIGHT:
                 self.physics_manager.add_velocity_x(self.main_char, self.config["user_motion_speed"])
                 self.userSounds.start_cont_effect('run')
-            elif event == Actions.START_USER_UP:
+            elif event_name == Actions.START_USER_UP:
                 if self.physics_manager.get_velocity_y(self.main_char) == 0:
                     self.physics_manager.add_velocity_y(self.main_char, -self.config["user_jump_speed"])
                     self.userSounds.play_one_sound_effect('jump')
-            elif event == Actions.STOP_USER_LEFT:
+            elif event_name == Actions.STOP_USER_LEFT:
                 self.physics_manager.add_velocity_x(self.main_char, self.config["user_motion_speed"])
                 self.userSounds.stop_cont_effect('run')
-            elif event == Actions.STOP_USER_RIGHT:
+            elif event_name == Actions.STOP_USER_RIGHT:
                 self.physics_manager.add_velocity_x(self.main_char, -self.config["user_motion_speed"])
                 self.userSounds.stop_cont_effect('run')
-            elif event == Actions.USER_SUCK:
-                [self.transmutation_manager.suck(actor) for actor in self.level.actors if self.picking_handler.is_picked(actor, self.input_manager.last_click_position)]
-            elif event == Actions.USER_BLOW:
-                (new_actor, tile_pos, weight) = self.transmutation_manager.blow(self.input_manager.last_user_selection, self.tile_size)
+            elif event_name == Actions.USER_SUCK:
+                [self.transmutation_manager.suck(actor) for actor in self.level.actors if self.picking_handler.is_picked(actor, event[1])]
+            elif event_name == Actions.USER_BLOW:
+                (new_actor, tile_pos, weight) = self.transmutation_manager.blow(event[1], self.tile_size)
                 self.level.actors.append(new_actor)
                 self.physics_manager.add_actor(new_actor, weight=weight)
                 self.physics_manager.set_position(new_actor, tile_pos)
-            elif event == Actions.START_BLOW_SELECTION:
-                self.picking_handler.start_user_selection(self.input_manager.last_click_position, self.tile_size)
-            elif event == Actions.STOP_BLOW_SELECTION:
+            elif event_name == Actions.START_BLOW_SELECTION:
+                self.picking_handler.start_user_selection(event[1], self.tile_size)
+            elif event_name == Actions.STOP_BLOW_SELECTION:
                 self.picking_handler.stop_user_selection()
-            elif event == Actions.START_DISSOLVE_SELECTION:
+            elif event_name == Actions.START_DISSOLVE_SELECTION:
                 self._highlight_actors = True
-            elif event == Actions.STOP_DISSOLVE_SELECTION:
+            elif event_name == Actions.STOP_DISSOLVE_SELECTION:
                 self._highlight_actors = False
+            elif event_name == Actions.CHOOSE_MATERIAL:
+                self.transmutation_manager.blow_key = event[1]
 
     """
     Updates all game objects and manager systems based on the frame time delta
@@ -106,8 +108,8 @@ class GameInstance(object):
     """
     Handle events, update game state, and render to the given screen
     """
-    def doFrame(self, screen, delta):
+    def doFrame(self, screen, delta, events):
         self._recalc_tilesize(screen)
-        self._handle_events()
+        self._handle_events(events)
         self._handle_updates(delta)
         self._render(screen)
