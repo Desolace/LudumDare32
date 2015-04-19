@@ -4,7 +4,7 @@ from actor import Actor
 
 class Level(object):
 
-    def __init__(self, level_name, physics_manager):
+    def __init__(self, level_name, physics_manager, material_manager):
         with open(level_name, "r") as levelData:
             self._level_def = json.load(levelData)
             self.width = self._level_def['w']
@@ -20,18 +20,14 @@ class Level(object):
             self.surface.fill((255,255,255))
 
             for item in self._level_def['map']:
-                material = self._level_def['materials'][item['mat']]
-                color = tuple(material['color'])
-                subsurface = pygame.Surface((item['w'], item['h']))
-                for dx in range(0, item['w']):
-                    for dy in range(0, item['h']):
-                        subsurface.set_at((dx, dy), color)
+                material = material_manager.get_material(item['mat'], (item['w'], item['h']))
+
                 if item.get("bg"): #its a background item, not interactable with the world
-                    self.surface.blit(subsurface, (item['x'], item['y']))
+                    self.surface.blit(material.surface, (item['x'], item['y']))
                 else: #its an actor in the world
-                    new_actor = Actor(subsurface, item['w'], item['h'])
-                    new_actor.points_per_tile = material["points"]
-                    physics_manager.add_actor(new_actor, weight=material["weight"])
+                    new_actor = Actor(material.surface, item['w'], item['h'])
+                    new_actor.points_per_tile = material.point_value
+                    physics_manager.add_actor(new_actor, weight=material.weight)
                     physics_manager.set_position(new_actor, (item['x'], item['y']))
                     self.actors.append(new_actor)
 
