@@ -1,6 +1,5 @@
 import pygame
 from pygame.locals import *
-from custom_exceptions import *
 
 from level import Level
 from actor import Actor

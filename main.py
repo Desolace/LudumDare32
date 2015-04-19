@@ -1,7 +1,6 @@
 import pygame
 import sys
 from pygame.locals import *
-from custom_exceptions import UserQuitException
 import json
 from sounds import SoundManager
 from input_manager import InputManager, Actions
