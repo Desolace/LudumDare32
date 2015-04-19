@@ -64,4 +64,7 @@ class InputManager(object):
                         yield Actions.USER_SUCK
                     else:
                         yield Actions.STOP_BLOW_SELECTION
-                        yield Actions.USER_BLOW
+
+            elif event.type == USEREVENT:
+                self.last_user_selection = event.bounds
+                yield Actions.USER_BLOW

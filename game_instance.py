@@ -46,7 +46,10 @@ class GameInstance(object):
             elif event == Actions.USER_SUCK:
                 [self.transmutation_manager.suck(actor) for actor in self.level.actors if self.picking_handler.is_picked(actor, self.input_manager.last_click_position)]
             elif event == Actions.USER_BLOW:
-                self._handle_spawning(self.input_manager.last_click_position)
+                (new_actor, tile_pos, weight) = self.transmutation_manager.blow({"color":(153,102,51), "weight":5, "points":2}, self.input_manager.last_user_selection, tile_size)
+                self.level.actors.append(new_actor)
+                self.physics_manager.add_actor(new_actor, weight=weight)
+                self.physics_manager.set_position(new_actor, tile_pos)
             elif event == Actions.START_BLOW_SELECTION:
                 self.picking_handler.start_user_selection(self.input_manager.last_click_position, tile_size)
             elif event == Actions.STOP_BLOW_SELECTION:

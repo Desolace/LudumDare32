@@ -20,6 +20,8 @@ class PickingHandler(object):
         self._user_selection_bound1 = self.tile_at_point(position, tile_size)
 
     def stop_user_selection(self):
+        if self._user_selection_bounds is not None:
+            pygame.event.post(pygame.event.Event(pygame.USEREVENT, {"bounds":self._user_selection_bounds}))
         self._user_selection_bound1 = None
         self._user_selection_bound2 = None
 
@@ -45,6 +47,10 @@ class PickingHandler(object):
             new_bound2 = self.tile_at_point(pygame.mouse.get_pos(), tile_size)
             if new_bound2 != self._user_selection_bound2:
                 self._user_selection_bound2 = new_bound2
+                self._user_selection_position = (
+                    min(self._user_selection_bound1[0], self._user_selection_bound2[0]) * tile_size,
+                    min(self._user_selection_bound1[1], self._user_selection_bound2[1]) * tile_size
+                )
                 self.selection_surface = pygame.Surface((
                     abs(self._user_selection_bound2[0] - self._user_selection_bound1[0]) * tile_size,
                     abs(self._user_selection_bound2[1] - self._user_selection_bound1[1]) * tile_size
@@ -52,9 +58,7 @@ class PickingHandler(object):
                 self.selection_surface.set_alpha(150)
                 if self.get_points_used(tile_size) > self.transmutation_manager.get_points():
                     self.selection_surface.fill(PickingHandler.ERROR_COLOR)
+                    self._user_selection_bounds = None
                 else:
                     self.selection_surface.fill(PickingHandler.SUCCESS_COLOR)
-                self._user_selection_position = (
-                    min(self._user_selection_bound1[0], self._user_selection_bound2[0]) * tile_size,
-                    min(self._user_selection_bound1[1], self._user_selection_bound2[1]) * tile_size
-                )
+                    self._user_selection_bounds = self.selection_surface.get_rect().move(self._user_selection_position)
