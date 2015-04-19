@@ -1,3 +1,6 @@
+import pygame
+from actor import Actor
+
 class TransmutationManager(object):
     def __init__(self):
         self._sucking = []
@@ -8,8 +11,12 @@ class TransmutationManager(object):
         actor.start_dissolving()
         self._sucking.append(actor)
         self._tiles_removed[actor] = 0
-    def blow(self):
-        pass
+    def blow(self, material, rect, tile_size):
+        surface = pygame.Surface((rect.width, rect.height))
+        surface.fill(material["color"])
+        actor = Actor(surface, rect.width / tile_size, rect.height / tile_size)
+        actor.point_value = material["points"]
+        return (actor, (rect.left / tile_size, rect.top / tile_size), material["weight"])
 
     def get_points(self):
         return self._points
