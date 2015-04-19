@@ -19,7 +19,7 @@ class GameInstance(object):
         self.physics_manager = PhysicsManager()
         self.transmutation_manager = TransmutationManager()
         self.material_manager = MaterialManager(config["material_file"])
-        self.material_manager.blow_key = "stone"
+        self.blow_key = "stone"
         self.picking_handler = PickingHandler(self.transmutation_manager)
         self.level = Level("{0}/{1}.lvl".format(config["levels_dir"], level_name), self.physics_manager, self.material_manager)
 
@@ -53,7 +53,7 @@ class GameInstance(object):
             elif event == Actions.USER_SUCK:
                 [self.transmutation_manager.suck(actor) for actor in self.level.actors if self.picking_handler.is_picked(actor, self.input_manager.last_click_position)]
             elif event == Actions.USER_BLOW:
-                (new_actor, tile_pos, weight) = self.transmutation_manager.blow(self.material_manager.get_blow_material(), self.input_manager.last_user_selection, self.tile_size)
+                (new_actor, tile_pos, weight) = self.transmutation_manager.blow(self.blow_key, self.input_manager.last_user_selection, self.tile_size)
                 self.level.actors.append(new_actor)
                 self.physics_manager.add_actor(new_actor, weight=weight)
                 self.physics_manager.set_position(new_actor, tile_pos)
