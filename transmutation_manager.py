@@ -13,7 +13,7 @@ class TransmutationManager(object):
         self._sucking.append(actor)
         self._tiles_removed[actor] = 0
     def blow(self, material_name, rect, tile_size):
-        material = self.material_manager.get_material(material_name, rect.width, rect.height)
+        material = self.material_manager.get_material(material_name, (rect.width, rect.height))
         actor = Actor(material.surface, rect.width / tile_size, rect.height / tile_size)
         actor.point_value = material.point_value
         return (actor, (rect.left / tile_size, rect.top / tile_size), material.weight)
