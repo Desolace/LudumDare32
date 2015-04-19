@@ -8,7 +8,6 @@ class PickingHandler(object):
         self.transmutation_manager = transmutation_manager
         self._user_selection_bound1 = None
         self._user_selection_bound2 = None
-        self._points_per_tile = 2
 
     def is_picked(self, actor, position):
         return actor.get_rect().collidepoint(position)
@@ -40,7 +39,7 @@ class PickingHandler(object):
             return (0,0)
 
     def get_points_used(self, tile_size):
-        return self._points_per_tile * (self.selection_surface.get_width() / tile_size) * (self.selection_surface.get_height() / tile_size)
+        return self.transmutation_manager.get_points_required((self.selection_surface.get_width() / tile_size), (self.selection_surface.get_height() / tile_size))
 
     def update(self, delta, tile_size):
         if self._user_selection_bound1 is not None: #user can select right now
