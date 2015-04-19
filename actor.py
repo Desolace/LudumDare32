@@ -3,7 +3,7 @@ import random
 import math
 
 class Actor(object):
-    MAIN_CHARACTER = ("characters/dumb.jpg", 5, 6)
+    MAIN_CHARACTER = ("characters/guy1.png",4, 8)
 
     _hash = None
     surface = None
