@@ -9,6 +9,7 @@ from physics_manager import PhysicsManager
 from picking_handler import PickingHandler
 from sounds import SoundManager
 from transmutation_manager import TransmutationManager
+from material_manager import MaterialManager
 
 class GameInstance(object):
 
@@ -17,8 +18,10 @@ class GameInstance(object):
         self.input_manager = InputManager()
         self.physics_manager = PhysicsManager()
         self.transmutation_manager = TransmutationManager()
+        self.material_manager = MaterialManager(config["material_file"])
+        self.material_manager.blow_key = "stone"
         self.picking_handler = PickingHandler(self.transmutation_manager)
-        self.level = Level("{0}/{1}.lvl".format(config["levels_dir"], level_name), self.physics_manager)
+        self.level = Level("{0}/{1}.lvl".format(config["levels_dir"], level_name), self.physics_manager, self.material_manager)
 
         self.main_char = Actor.genMainCharacter()
 
@@ -58,7 +61,7 @@ class GameInstance(object):
             elif event == Actions.USER_SUCK:
                 [self.transmutation_manager.suck(actor) for actor in self.level.actors if self.picking_handler.is_picked(actor, self.input_manager.last_click_position)]
             elif event == Actions.USER_BLOW:
-                (new_actor, tile_pos, weight) = self.transmutation_manager.blow({"color":(153,102,51), "weight":5, "points":2}, self.input_manager.last_user_selection, tile_size)
+                (new_actor, tile_pos, weight) = self.transmutation_manager.blow(self.material_manager.get_blow_material(), self.input_manager.last_user_selection, tile_size)
                 self.level.actors.append(new_actor)
                 self.physics_manager.add_actor(new_actor, weight=weight)
                 self.physics_manager.set_position(new_actor, tile_pos)

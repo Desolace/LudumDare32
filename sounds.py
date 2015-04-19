@@ -3,10 +3,10 @@ import sys
 
 
 class SoundManager(object):
-    
+
     def __init__(self,contEffect=None):
         self.contEffect = contEffect
-        self.soundList = {'run' : 0}        
+        self.soundList = {'run' : 0}
 
     def set_background_music(level):
         backgroundMusic.stop()
@@ -18,9 +18,8 @@ class SoundManager(object):
             backgroundMusic.play(loops = -1)
         except:
             print "error"
-            
+
     def play_one_sound_effect(self,effect):
-        print "a"
         effectFilename = ''
         if effect == "jump":
             effectFilename = 'sounds/jump.wav'

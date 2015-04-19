@@ -4,7 +4,7 @@ from actor import Actor
 
 class Level(object):
 
-    def __init__(self, level_name, physics_manager):
+    def __init__(self, level_name, physics_manager, material_manager):
         with open(level_name, "r") as levelData:
             self._level_def = json.load(levelData)
             self.width = self._level_def['w']
@@ -20,7 +20,7 @@ class Level(object):
             self.surface.fill((255,255,255))
 
             for item in self._level_def['map']:
-                material = self._level_def['materials'][item['mat']]
+                material = material_manager.get_material(item['mat'])
                 color = tuple(material['color'])
                 subsurface = pygame.Surface((item['w'], item['h']))
                 for dx in range(0, item['w']):

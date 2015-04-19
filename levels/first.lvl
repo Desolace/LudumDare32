@@ -1,21 +1,6 @@
 {
   "w":100,
   "h":60,
-  "materials":{
-    "dirt":{
-      "color":[153, 102, 51],
-      "weight":5,
-      "points":2
-    }, "stone":{
-      "color":[85, 85, 85],
-      "weight":30,
-      "points":5
-    }, "cloud":{
-      "color":[90, 162, 216],
-      "weight":0,
-      "points":2
-    }
-  },
   "map": [
     {
       "name": "some dirt",
