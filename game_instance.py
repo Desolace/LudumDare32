@@ -21,7 +21,7 @@ class GameInstance(object):
         self.material_manager = MaterialManager(config["material_file"])
         self.transmutation_manager = TransmutationManager(self.material_manager)
         self.transmutation_manager.blow_key = "stone"
-        self.picking_handler = PickingHandler(self.transmutation_manager)
+        self.picking_handler = PickingHandler(self.transmutation_manager, self.physics_manager)
         self.level = Level("{0}/{1}.lvl".format(config["levels_dir"], level_name), self.physics_manager, self.material_manager)
 
         self.main_char = Player.genMainCharacter(self.physics_manager)
