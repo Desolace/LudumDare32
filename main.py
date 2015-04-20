@@ -30,7 +30,7 @@ screens = {
     "inventory":menu.InventoryMenu(config),
     "complete":screens.CompleteScreen(config)
 }
-
+"""
 main_menu = menu.MainMenu(config, enabled=True)
 
 while True:
@@ -48,7 +48,8 @@ while True:
 
     main_menu.doFrame(surface, delta, events)
     pygame.display.update()
-
+"""
+input_manager._in_game = True
 paused = False
 
 while True:

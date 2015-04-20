@@ -1,6 +1,6 @@
 import json
 import pygame
-from actor import Actor
+from actor import Actor, Enemy
 
 """
 An instance of the given level. Handles creation of all static actors in the level.
@@ -38,6 +38,12 @@ class Level(object):
 
                     if item.get("goal"): #this is the level end goal point
                         self.goal = new_actor
+
+            for item in self._level_def["enemies"]:
+                enemy = Enemy.generate(item["type"], physics_manager)
+                physics_manager.add_actor(enemy, weight=5, collidable=True)
+                physics_manager.set_position(enemy, (item["x"], item["y"]))
+                self.actors.append(enemy)
 
         if self.goal is None:
             raise Exception("LvlError: A goal is required for each level.")
