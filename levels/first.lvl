@@ -9,15 +9,17 @@
       "w":10,
       "h":10,
       "bg":false,
-      "mat":"dirt"
+      "mat":"dirt",
+      "dissolvable":true
     },
     {
       "name":"floor",
       "x":0,
-      "y":59,
+      "y":50,
       "w":100,
       "h":1,
-      "mat":"stone"
+      "mat":"stone",
+      "dissolvable":false
     },
     {
       "name": "first cloud",
@@ -25,7 +27,8 @@
       "y":5,
       "w":10,
       "h":2,
-      "mat":"cloud"
+      "mat":"cloud",
+      "dissolvable":true
     },
     {
       "name": "second cloud",
@@ -33,7 +36,8 @@
       "y":10,
       "w":10,
       "h":2,
-      "mat":"cloud"
+      "mat":"cloud",
+      "dissolvable":true
     },
     {
       "name": "third cloud",
@@ -41,7 +45,8 @@
       "y":15,
       "w":20,
       "h":2,
-      "mat":"cloud"
+      "mat":"cloud",
+      "dissolvable":true
     },
     {
       "name":"goal",
@@ -50,7 +55,8 @@
       "w":10,
       "h":10,
       "mat":"light",
-      "goal":true
+      "goal":true,
+      "dissolvable":false
     }
   ],
   "enemies":[
@@ -58,6 +64,12 @@
       "type":"basic",
       "x":30,
       "y":30
+    },
+    {
+      "type":"basic",
+      "x":70,
+      "y":40,
+      "dissolvable":true
     }
   ]
 }

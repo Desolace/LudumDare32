@@ -25,6 +25,7 @@ class Actor(object):
         self.points_per_tile = 0
         self._is_dissolving = False
         self.dissolved = False
+        self.dissolvable = False
 
     def start_dissolving(self):
         if not self._is_dissolving:
@@ -88,8 +89,7 @@ class Enemy(Actor):
 
         if self._horizontal_direction == LEFT:
             rect = self.get_rect()
-            floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomleft[0] / tile_size) - 1, (rect.bottomleft[1] / tile_size) + 1, 1, 1))
-            #mvmnt_space_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.topleft[0] / tile_size) - 1, (rect.topleft[1] / tile_size), 1, 1))
+            floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomleft[0] / tile_size) - 1, (rect.bottomleft[1] / tile_size), 1, 1))
             if not floor_tile_filled or self.physics_manager.was_collided(self, ImpactSide.LEFT) is not None:
                 self.physics_manager.set_velocity_x(self, 0)
                 self._horizontal_direction = RIGHT
@@ -97,8 +97,7 @@ class Enemy(Actor):
                 self.physics_manager.set_velocity_x(self, LEFT * ENEMY_SPEED)
         elif self._horizontal_direction == RIGHT:
             rect = self.get_rect()
-            floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomright[0] / tile_size) + 1, (rect.bottomright[1] / tile_size) + 1, 1, 1))
-            #mvmnt_space_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.topright[0] / tile_size), (rect.topright[1] / tile_size), 1, 1))
+            floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomright[0] / tile_size) + 1, (rect.bottomright[1] / tile_size), 1, 1))
             if not floor_tile_filled or self.physics_manager.was_collided(self, ImpactSide.RIGHT) is not None:
                 self.physics_manager.set_velocity_x(self, 0)
                 self._horizontal_direction = LEFT

@@ -99,7 +99,7 @@ class GameInstance(object):
         screen.blit(self.main_char.surface, self.main_char.position)
         for actor in self.level.actors:
             screen.blit(actor.surface, actor.position)
-            if self._highlight_actors and self.picking_handler.is_picked(actor, mouse_position):
+            if self._highlight_actors and self.picking_handler.is_picked(actor, mouse_position) and actor.dissolvable:
                 pygame.draw.rect(screen, tuple(self.config["picking_color"]), actor.get_rect(), 2)
 
         screen.blit(self.picking_handler.surface, self.picking_handler.position)
