@@ -1,6 +1,6 @@
 import json
 import pygame
-from actor import Actor, Enemy
+from actor import Actor, Enemy, Block
 
 """
 An instance of the given level. Handles creation of all static actors in the level.
@@ -30,7 +30,7 @@ class Level(object):
                 if item.get("bg"): #its a background item, not interactable with the world
                     self.surface.blit(material.surface, (item['x'], item['y']))
                 else: #its an actor in the world
-                    new_actor = Actor(material.surface, item['w'], item['h'])
+                    new_actor = Block(material.surface, item['w'], item['h'])
                     new_actor.points_per_tile = material.point_value
                     physics_manager.add_actor(new_actor, weight=material.weight, collidable=material.collidable)
                     physics_manager.set_position(new_actor, (item['x'], item['y']))

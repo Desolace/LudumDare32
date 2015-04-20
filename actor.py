@@ -68,6 +68,10 @@ class Actor(object):
         surf_rect = self.surface.get_rect()
         return surf_rect.move(*self.position)
 
+class Block(Actor):
+    def __init__(self, surface, wTiles, hTiles):
+        Actor.__init__(self, surface, wTiles, hTiles)
+
 LEFT, RIGHT = -1, 1
 ENEMY_SPEED = 1
 
@@ -84,7 +88,7 @@ class Enemy(Actor):
             rect = self.get_rect()
             floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomleft[0] / tile_size) - 1, (rect.bottomleft[1] / tile_size) + 1, 1, 1))
             #mvmnt_space_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.topleft[0] / tile_size) - 1, (rect.topleft[1] / tile_size), 1, 1))
-            if not floor_tile_filled or self.physics_manager.was_collided(self, ImpactSide.LEFT):
+            if not floor_tile_filled or self.physics_manager.was_collided(self, ImpactSide.LEFT) is not None:
                 self.physics_manager.set_velocity_x(self, 0)
                 self._horizontal_direction = RIGHT
             else:
@@ -93,15 +97,20 @@ class Enemy(Actor):
             rect = self.get_rect()
             floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomright[0] / tile_size) + 1, (rect.bottomright[1] / tile_size) + 1, 1, 1))
             #mvmnt_space_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.topright[0] / tile_size), (rect.topright[1] / tile_size), 1, 1))
-            if not floor_tile_filled or self.physics_manager.was_collided(self, ImpactSide.RIGHT):
+            if not floor_tile_filled or self.physics_manager.was_collided(self, ImpactSide.RIGHT) is not None:
                 self.physics_manager.set_velocity_x(self, 0)
                 self._horizontal_direction = LEFT
             else:
                 self.physics_manager.set_velocity_x(self, RIGHT * ENEMY_SPEED)
 
-        #kill self if hit on the head
-        if self.physics_manager.was_collided(self, ImpactSide.TOP):
-            self.start_dissolving()
+        #kill self if hit on the head by a block
+        top_collider = self.physics_manager.was_collided(self, ImpactSide.TOP)
+        print top_collider
+        if top_collider is not None and isinstance(top_collider, Block):
+            self.crush()
+
+    def crush(self):
+        self.dissolved = True
 
     @staticmethod
     def generate(model, physics_manager):

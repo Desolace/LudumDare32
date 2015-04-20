@@ -1,5 +1,5 @@
 import pygame
-from actor import Actor
+from actor import Block
 
 """
 Manages the players points and the absorbtion and construction of new actors.
@@ -33,7 +33,7 @@ class TransmutationManager(object):
     """
     def blow(self, rect, tile_size):
         material = self.material_manager.get_material(self.blow_key, (rect.width, rect.height))
-        actor = Actor(material.surface, rect.width / tile_size, rect.height / tile_size)
+        actor = Block(material.surface, rect.width / tile_size, rect.height / tile_size)
         actor.points_per_tile = material.point_value
 
         points_used = material.point_value * actor.widthInTiles * actor.heightInTiles

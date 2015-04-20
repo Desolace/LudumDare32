@@ -40,12 +40,12 @@ class CollisionDetector(object):
         blockingRect = self._actors[blockingActor].get_scaled_rect(self._precision)
         if self._clips_vertically(movingRect, blockingRect):
             if self._clips_left(movingRect, blockingRect.left):
-                self._actors[movingActor].recent_impact_sides.append(ImpactSide.RIGHT)
-                self._actors[blockingActor].recent_impact_sides.append(ImpactSide.LEFT)
+                self._actors[movingActor].recent_impact_sides[ImpactSide.RIGHT] = blockingActor
+                self._actors[blockingActor].recent_impact_sides[ImpactSide.LEFT] = movingActor
                 self._actors[movingActor].position[X] = (blockingRect.left / self._precision) - self._actors[movingActor].width
             elif self._clips_right(movingRect, blockingRect.right):
-                self._actors[movingActor].recent_impact_sides.append(ImpactSide.LEFT)
-                self._actors[blockingActor].recent_impact_sides.append(ImpactSide.RIGHT)
+                self._actors[movingActor].recent_impact_sides[ImpactSide.LEFT] = blockingActor
+                self._actors[blockingActor].recent_impact_sides[ImpactSide.RIGHT] = movingActor
                 self._actors[movingActor].position[X] = (blockingRect.right / self._precision)
 
     def _snap_y(self, movingActor, blockingActor):
@@ -54,13 +54,13 @@ class CollisionDetector(object):
 
         if self._clips_horizontally(movingRect, blockingRect):
             if self._clips_top(movingRect, blockingRect.top):
-                self._actors[movingActor].recent_impact_sides.append(ImpactSide.BOTTOM)
-                self._actors[blockingActor].recent_impact_sides.append(ImpactSide.TOP)
+                self._actors[movingActor].recent_impact_sides[ImpactSide.BOTTOM] = blockingActor
+                self._actors[blockingActor].recent_impact_sides[ImpactSide.TOP] = movingActor
                 self._actors[movingActor].velocity[Y] = 0
                 self._actors[movingActor].position[Y] = (blockingRect.top / self._precision) - self._actors[movingActor].height
             elif self._clips_bottom(movingRect, blockingRect.bottom):
-                self._actors[movingActor].recent_impact_sides.append(ImpactSide.TOP)
-                self._actors[blockingActor].recent_impact_sides.append(ImpactSide.BOTTOM)
+                self._actors[movingActor].recent_impact_sides[ImpactSide.TOP] = blockingActor
+                self._actors[blockingActor].recent_impact_sides[ImpactSide.BOTTOM] = movingActor
                 self._actors[movingActor].velocity[Y] = 0
                 self._actors[movingActor].position[Y] = (blockingRect.bottom / self._precision)
 

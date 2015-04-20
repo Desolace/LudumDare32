@@ -12,10 +12,10 @@
       "mat":"dirt"
     },
     {
-      "name":"A rock",
-      "x":25,
-      "y":40,
-      "w":20,
+      "name":"floor",
+      "x":0,
+      "y":55,
+      "w":100,
       "h":5,
       "mat":"stone"
     },
