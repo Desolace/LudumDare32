@@ -2,7 +2,7 @@ import pygame
 from pygame.locals import *
 
 from level import Level
-from actor import Actor
+from actor import Actor, Player
 from input_manager import Actions, CustomEvents
 from physics_manager import PhysicsManager
 from picking_handler import PickingHandler
@@ -24,7 +24,7 @@ class GameInstance(object):
         self.picking_handler = PickingHandler(self.transmutation_manager)
         self.level = Level("{0}/{1}.lvl".format(config["levels_dir"], level_name), self.physics_manager, self.material_manager)
 
-        self.main_char = Actor.genMainCharacter()
+        self.main_char = Player.genMainCharacter(self.physics_manager)
 
         self.physics_manager.add_actor(self.main_char, weight=3)
         self._highlight_actors = False
@@ -111,7 +111,7 @@ class GameInstance(object):
         self._recalc_tilesize(screen)
         self._handle_events(events)
         self._handle_updates(delta)
-        
+
         if self.level.is_player_at_goal(self.main_char):
             pygame.event.post(pygame.event.Event(CustomEvents.USERWINS))
 

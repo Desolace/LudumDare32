@@ -28,7 +28,8 @@ input_manager = InputManager()
 screens = {
     "pause":screens.PauseScreen(config),
     "inventory":menu.InventoryMenu(config),
-    "complete":screens.CompleteScreen(config)
+    "complete":screens.CompleteScreen(config),
+    "gameover":screens.GameOverScreen(config)
 }
 """
 main_menu = menu.MainMenu(config, enabled=True)
@@ -62,6 +63,9 @@ while True:
     elif Actions.GAME_WON in events:
         paused = True
         screens["complete"].enabled = True
+    elif Actions.GAME_OVER in events:
+        paused = True
+        screens["gameover"].enabled = True
     #toggle relevent ui screens
     elif Actions.TOGGLE_PAUSE in events:
         paused = not paused

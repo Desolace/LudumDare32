@@ -2,7 +2,9 @@ import pygame
 import random
 import math
 
+from physics_manager import PhysicsManager
 from collisions import ImpactSide
+from input_manager import CustomEvents
 
 class Actor(object):
     MAIN_CHARACTER = ("characters/guy1.png",4, 8)
@@ -104,9 +106,8 @@ class Enemy(Actor):
                 self.physics_manager.set_velocity_x(self, RIGHT * ENEMY_SPEED)
 
         #kill self if hit on the head by a block
-        top_collider = self.physics_manager.was_collided(self, ImpactSide.TOP)
-        print top_collider
-        if top_collider is not None and isinstance(top_collider, Block):
+        #also kill self if it hits the floor
+        if isinstance(self.physics_manager.was_collided(self, ImpactSide.TOP), Block) or self.physics_manager.was_collided(self, ImpactSide.BOTTOM) == PhysicsManager.FLOOR:
             self.crush()
 
     def crush(self):
@@ -118,3 +119,20 @@ class Enemy(Actor):
             enemy = Enemy(pygame.image.load(Actor.MAIN_CHARACTER[0]), Actor.MAIN_CHARACTER[1], Actor.MAIN_CHARACTER[2], physics_manager)
             enemy.points_per_tile = 10
             return enemy
+
+class Player(Actor):
+    def __init__(self, surface, wTiles, hTiles, physics_manager):
+        self.physics_manager = physics_manager
+        Actor.__init__(self, surface, wTiles, hTiles)
+
+    def update(self, delta, tile_size):
+        if isinstance(self.physics_manager.was_collided(self, ImpactSide.TOP), Block) or self.physics_manager.was_collided(self, ImpactSide.BOTTOM) == PhysicsManager.FLOOR:
+            self.die()
+        Actor.update(self, delta, tile_size)
+
+    def die(self):
+        pygame.event.post(pygame.event.Event(CustomEvents.PLAYERDEAD))
+
+    @staticmethod
+    def genMainCharacter(physics_manager):
+        return Player(pygame.image.load(Actor.MAIN_CHARACTER[0]), Actor.MAIN_CHARACTER[1], Actor.MAIN_CHARACTER[2], physics_manager)

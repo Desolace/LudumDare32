@@ -31,3 +31,17 @@ class CompleteScreen(object):
             surface.fill(COMPLETE_COLOR)
             surface.set_alpha(COMPLETE_ALPHA)
             screen.blit(surface, (0,0))
+
+GAME_OVER_COLOR = (0, 0, 0)
+GAME_OVER_ALPHA = 150
+
+class GameOverScreen(object):
+    def __init__(self, config, enabled=False):
+        self.enabled = enabled
+
+    def doFrame(self, screen, delta, events):
+        if self.enabled:
+            surface = pygame.Surface(screen.get_size())
+            surface.fill(GAME_OVER_COLOR)
+            surface.set_alpha(GAME_OVER_ALPHA)
+            screen.blit(surface, (0,0))

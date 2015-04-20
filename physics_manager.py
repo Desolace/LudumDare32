@@ -1,5 +1,5 @@
 import pygame
-from collisions import CollisionDetector
+from collisions import CollisionDetector, ImpactSide
 
 class PhysicsAttributes:
     def __init__(self):
@@ -22,6 +22,8 @@ Y = 1
 GRAVITY = 9.8
 
 class PhysicsManager(object):
+    FLOOR = 12318423 #unique identifier for the floor
+
     _actors = {}
     world_width, world_height = None, None
     _collision_precision = 100
@@ -75,6 +77,7 @@ class PhysicsManager(object):
                 attributes.position[Y] = 0
                 attributes.velocity[Y] = 0
             elif(attributes.position[Y] > self.world_height - attributes.height):
+                attributes.recent_impact_sides[ImpactSide.BOTTOM] = PhysicsManager.FLOOR
                 attributes.position[Y] = self.world_height - attributes.height
                 attributes.velocity[Y] = 0
             if attributes.velocity[Y] != 0:
