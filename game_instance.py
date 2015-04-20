@@ -111,7 +111,7 @@ class GameInstance(object):
         self._recalc_tilesize(screen)
         self._handle_events(events)
         self._handle_updates(delta)
-
+        
         if self.level.is_player_at_goal(self.main_char):
             pygame.event.post(pygame.event.Event(CustomEvents.USERWINS))
 

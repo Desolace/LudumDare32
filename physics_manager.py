@@ -10,6 +10,7 @@ class PhysicsAttributes:
         self.acceleration = [0.0, 0.0]
         self.collidable = True
         self.weight = 0
+        self.recent_impact_sides = []
 
     def get_rect(self):
         return pygame.Rect(self.position[0], self.position[1], self.width, self.height)
@@ -59,6 +60,10 @@ class PhysicsManager(object):
     def update(self, delta, tileSize):
         collision_detector = CollisionDetector(self._actors, self._collision_precision)
 
+        #clear collisions
+        for actor, attributes in self._actors.iteritems():
+            attributes.recent_impact_sides = []
+
         for actor, attributes in self._actors.iteritems():
             if attributes.weight != 0:
                 attributes.acceleration[Y] = GRAVITY
@@ -86,3 +91,12 @@ class PhysicsManager(object):
         #set real screen positions
         for actor, attributes in self._actors.iteritems():
             actor.position = (attributes.position[X] * tileSize, attributes.position[1] * tileSize)
+
+    def is_space_filled(self, space):
+        for actor, attributes in self._actors.iteritems():
+            if attributes.get_rect().colliderect(space):
+                return True
+        return False
+
+    def was_collided(self, actor, side):
+        return (side in self._actors[actor].recent_impact_sides)
