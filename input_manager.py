@@ -25,6 +25,7 @@ class Actions(object):
 
     CHOOSE_MATERIAL=18
     GAME_WON=19
+    GAME_OVER=21
     START_GAME=20
 
 class CustomEvents:
@@ -32,6 +33,7 @@ class CustomEvents:
     CLOSEINV=USEREVENT+2
     USERWINS=USEREVENT+3
     STARTBUTTONCLICK=USEREVENT+4
+    PLAYERDEAD=USEREVENT+5
 
 class InputManager(object):
     def __init__(self):
@@ -114,6 +116,8 @@ class InputManager(object):
                                 if Actions.START_BLOW_SELECTION in self._state:
                                     self._state.remove(Actions.START_BLOW_SELECTION)
                                     actions.append((Actions.STOP_BLOW_SELECTION, event.pos))
+                    elif event.type == CustomEvents.PLAYERDEAD:
+                        actions.append(Actions.GAME_OVER)
 
                     elif event.type == USEREVENT:
                         actions.append((Actions.USER_BLOW, event.bounds))
