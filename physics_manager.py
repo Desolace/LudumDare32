@@ -79,25 +79,6 @@ class PhysicsManager(object):
             dy = delta * attributes.velocity[Y] * self.UNITS_PER_TILE
             collision_detector.handle_collisions_y(actor, dy)
 
-            """
-            if(attributes.position[Y] < 0):
-                attributes.position[Y] = 0
-                attributes.velocity[Y] = 0
-            elif(attributes.position[Y] > self.world_height - attributes.height):
-                attributes.recent_impact_sides[ImpactSide.BOTTOM] = PhysicsManager.FLOOR
-                attributes.position[Y] = self.world_height - attributes.height
-                attributes.velocity[Y] = 0
-            if attributes.velocity[Y] != 0:
-                collision_detector.handle_collisions_y(actor)
-
-            attributes.position[X] += delta * attributes.velocity[X] * self.UNITS_PER_TILE
-            if(attributes.position[X] < 0):
-                attributes.position[X] = 0
-            elif(attributes.position[X] > self.world_width - attributes.width):
-                attributes.position[X] = self.world_width - attributes.width
-            if attributes.velocity[X] != 0:
-                collision_detector.handle_collisions_x(actor)"""
-
         #set real screen positions
         for actor, attributes in self._actors.iteritems():
             actor.position = (attributes.position[X] * tileSize, attributes.position[Y] * tileSize)

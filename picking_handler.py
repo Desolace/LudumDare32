@@ -64,7 +64,7 @@ class PickingHandler(object):
                     abs(self._user_selection_bound2[1] - self._user_selection_bound1[1]) * tile_size
                     ))
                 self.selection_surface.set_alpha(150)
-            if self.get_points_used(tile_size) > self.transmutation_manager.current_points or self._is_selection_space_filled(tile_size):
+            if self.selection_surface.get_width() == 0 or self.selection_surface.get_height() == 0 or self.get_points_used(tile_size) > self.transmutation_manager.current_points or self._is_selection_space_filled(tile_size):
                 self.selection_surface.fill(PickingHandler.ERROR_COLOR)
                 self._user_selection_bounds = None
             else:

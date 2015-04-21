@@ -15,7 +15,7 @@ class CollisionDetector(object):
         for other_actor, other_attributes in self._actors.iteritems():
             if actor != other_actor and other_attributes.collidable and change_box.colliderect(other_attributes.get_scaled_rect(self._precision)):
                 yield other_actor
-                
+
     def handle_collisions_x(self, actor, dx):
         if self._actors[actor].collidable and dx != 0:
             oldx = self._actors[actor].position[X]
@@ -25,14 +25,19 @@ class CollisionDetector(object):
 
             if len(collisions):
                 first_collision = max(collisions, key=(lambda x: self._actors[x].position[X])) if dx > 0 else max(collisions, key=(lambda x: self._actors[x].position[X] + self._actors[x].width))
+                old_x = self._actors[actor].position[X]
                 if dx > 0:
                     self._actors[actor].position[X] = self._actors[first_collision].position[X] - self._actors[actor].width
-                    self._actors[actor].given_impacts[ImpactSide.RIGHT] = first_collision
-                    self._actors[first_collision].received_impacts[ImpactSide.LEFT] = actor
+                    actual_dx = abs(self._actors[actor].position[X] - old_x)
+                    if actual_dx != 0:
+                        self._actors[actor].given_impacts[ImpactSide.RIGHT] = first_collision
+                        self._actors[first_collision].received_impacts[ImpactSide.LEFT] = actor
                 else:
                     self._actors[actor].position[X] = self._actors[first_collision].position[X] + self._actors[first_collision].width
-                    self._actors[actor].given_impacts[ImpactSide.LEFT] = first_collision
-                    self._actors[first_collision].received_impacts[ImpactSide.RIGHT] = actor
+                    actual_dx = abs(self._actors[actor].position[X] - old_x)
+                    if actual_dx != 0:
+                        self._actors[actor].given_impacts[ImpactSide.LEFT] = first_collision
+                        self._actors[first_collision].received_impacts[ImpactSide.RIGHT] = actor
             else:
                 self._actors[actor].position[X] += dx
 
@@ -44,14 +49,19 @@ class CollisionDetector(object):
 
             if len(collisions):
                 first_collision = max(collisions, key=(lambda x: self._actors[x].position[Y])) if dy > 0 else max(collisions, key=(lambda x: self._actors[x].position[Y] + self._actors[x].height))
+                old_y = self._actors[actor].position[Y]
                 if dy > 0:
                     self._actors[actor].position[Y] = self._actors[first_collision].position[Y] - self._actors[actor].height
-                    self._actors[actor].given_impacts[ImpactSide.BOTTOM] = first_collision
-                    self._actors[first_collision].received_impacts[ImpactSide.TOP] = actor
+                    actual_dy = abs(self._actors[actor].position[Y] - old_y)
+                    if actual_dy != 0:
+                        self._actors[actor].given_impacts[ImpactSide.BOTTOM] = first_collision
+                        self._actors[first_collision].received_impacts[ImpactSide.TOP] = actor
                 else:
                     self._actors[actor].position[Y] = self._actors[first_collision].position[Y] + self._actors[first_collision].height
-                    self._actors[actor].given_impacts[ImpactSide.TOP] = first_collision
-                    self._actors[first_collision].received_impacts[ImpactSide.BOTTOM] = actor
+                    actual_dy = abs(self._actors[actor].position[Y] - old_y)
+                    if actual_dy != 0:
+                        self._actors[actor].given_impacts[ImpactSide.TOP] = first_collision
+                        self._actors[first_collision].received_impacts[ImpactSide.BOTTOM] = actor
                 self._actors[actor].velocity[Y] = 0
             else:
                 self._actors[actor].position[Y] += dy
