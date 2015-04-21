@@ -91,7 +91,7 @@ class Enemy(Actor):
         if self._horizontal_direction == LEFT:
             rect = self.get_rect()
             floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomleft[0] / tile_size) - 1, (rect.bottomleft[1] / tile_size), 1, 1))
-            if not floor_tile_filled or self.physics_manager.gave_impact(self, ImpactSide.LEFT) is not None:
+            if not floor_tile_filled or self.physics_manager.gave_impact(self, ImpactSide.LEFT) is not None or self.physics_manager.received_impact(self, ImpactSide.LEFT) is not None:
                 self.physics_manager.set_velocity_x(self, 0)
                 self._horizontal_direction = RIGHT
             else:
@@ -99,7 +99,7 @@ class Enemy(Actor):
         elif self._horizontal_direction == RIGHT:
             rect = self.get_rect()
             floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomright[0] / tile_size) + 1, (rect.bottomright[1] / tile_size), 1, 1))
-            if not floor_tile_filled or self.physics_manager.gave_impact(self, ImpactSide.RIGHT) is not None:
+            if not floor_tile_filled or self.physics_manager.gave_impact(self, ImpactSide.RIGHT) is not None or self.physics_manager.received_impact(self, ImpactSide.RIGHT) is not None:
                 self.physics_manager.set_velocity_x(self, 0)
                 self._horizontal_direction = LEFT
             else:
