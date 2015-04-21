@@ -33,7 +33,8 @@ class Level(object):
                     new_actor = Block(material.surface, item['w'], item['h'])
                     new_actor.points_per_tile = material.point_value
                     new_actor.dissolvable = item.get("dissolvable", False)
-                    physics_manager.add_actor(new_actor, weight=material.weight, collidable=material.collidable)
+                    weight = item.get("weight", material.weight)
+                    physics_manager.add_actor(new_actor, weight=weight, collidable=material.collidable)
                     physics_manager.set_position(new_actor, (item['x'], item['y']))
                     self.actors.append(new_actor)
 

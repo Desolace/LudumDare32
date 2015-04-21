@@ -27,6 +27,7 @@ class GameInstance(object):
         self.main_char = Player.genMainCharacter(self.physics_manager)
 
         self.physics_manager.add_actor(self.main_char, weight=3)
+        self.physics_manager.set_position(self.main_char, (25, 10))
         self._highlight_actors = False
         self.userSounds = SoundManager()
 

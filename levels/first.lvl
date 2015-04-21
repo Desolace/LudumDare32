@@ -15,18 +15,47 @@
     {
       "name":"floor",
       "x":0,
-      "y":50,
+      "y":59,
       "w":100,
       "h":1,
       "mat":"stone",
-      "dissolvable":false
+      "dissolvable":false,
+      "weight":0
+    },
+    {
+      "name": "left wall",
+      "x":-1,
+      "y":0,
+      "w":1,
+      "h":60,
+      "mat":"stone",
+      "weight":0
+    },
+    {
+      "name": "right wall",
+      "x":100,
+      "y":0,
+      "w":1,
+      "h":60,
+      "mat":"stone",
+      "weight":0
+    },
+    {
+      "name": "ceiling",
+      "x":0,
+      "y":-1,
+      "w":100,
+      "h":1,
+      "mat":"stone",
+      "weight":0
     },
     {
       "name": "first cloud",
       "x":5,
-      "y":5,
+      "y":40,
       "w":10,
       "h":2,
+      "weight":0,
       "mat":"cloud",
       "dissolvable":true
     },

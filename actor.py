@@ -26,6 +26,7 @@ class Actor(object):
         self._is_dissolving = False
         self.dissolved = False
         self.dissolvable = False
+        self.name = "actor"
 
     def start_dissolving(self):
         if not self._is_dissolving:
@@ -90,7 +91,7 @@ class Enemy(Actor):
         if self._horizontal_direction == LEFT:
             rect = self.get_rect()
             floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomleft[0] / tile_size) - 1, (rect.bottomleft[1] / tile_size), 1, 1))
-            if not floor_tile_filled or self.physics_manager.was_collided(self, ImpactSide.LEFT) is not None:
+            if not floor_tile_filled or self.physics_manager.gave_impact(self, ImpactSide.LEFT) is not None:
                 self.physics_manager.set_velocity_x(self, 0)
                 self._horizontal_direction = RIGHT
             else:
@@ -98,7 +99,7 @@ class Enemy(Actor):
         elif self._horizontal_direction == RIGHT:
             rect = self.get_rect()
             floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomright[0] / tile_size) + 1, (rect.bottomright[1] / tile_size), 1, 1))
-            if not floor_tile_filled or self.physics_manager.was_collided(self, ImpactSide.RIGHT) is not None:
+            if not floor_tile_filled or self.physics_manager.gave_impact(self, ImpactSide.RIGHT) is not None:
                 self.physics_manager.set_velocity_x(self, 0)
                 self._horizontal_direction = LEFT
             else:
@@ -106,7 +107,7 @@ class Enemy(Actor):
 
         #kill self if hit on the head by a block
         #also kill self if it hits the floor
-        if isinstance(self.physics_manager.was_collided(self, ImpactSide.TOP), Block) or self.physics_manager.was_collided(self, ImpactSide.BOTTOM) == PhysicsManager.FLOOR:
+        if isinstance(self.physics_manager.received_impact(self, ImpactSide.TOP), Block):
             self.crush()
 
     def crush(self):
@@ -123,9 +124,10 @@ class Player(Actor):
     def __init__(self, surface, wTiles, hTiles, physics_manager):
         self.physics_manager = physics_manager
         Actor.__init__(self, surface, wTiles, hTiles)
+        self.name ="player"
 
     def update(self, delta, tile_size):
-        if isinstance(self.physics_manager.was_collided(self, ImpactSide.TOP), Block) or self.physics_manager.was_collided(self, ImpactSide.BOTTOM) == PhysicsManager.FLOOR:
+        if isinstance(self.physics_manager.received_impact(self, ImpactSide.TOP), Block):
             self.die()
         Actor.update(self, delta, tile_size)
 

@@ -6,11 +6,12 @@ class PhysicsAttributes:
         self.width = 0
         self.height = 0
         self.position = [0.0,0.0]
-        self.velocity = [0.0, 0.0]
-        self.acceleration = [0.0, 0.0]
+        self.velocity = [0.0,0.0]
+        self.acceleration = [0.0,0.0]
         self.collidable = True
         self.weight = 0
-        self.recent_impact_sides = {}
+        self.received_impacts = {}
+        self.given_impacts = {}
 
     def get_rect(self):
         return pygame.Rect(self.position[0], self.position[1], self.width, self.height)
@@ -64,7 +65,8 @@ class PhysicsManager(object):
 
         #clear collisions
         for actor, attributes in self._actors.iteritems():
-            attributes.recent_impact_sides = {}
+            attributes.received_impacts = {}
+            attributes.given_impacts = {}
 
         for actor, attributes in self._actors.iteritems():
             if attributes.weight != 0:
@@ -72,7 +74,12 @@ class PhysicsManager(object):
             attributes.velocity[X] += delta * attributes.acceleration[X] #every frame, we update the velocity based on how fast it is changing
             attributes.velocity[Y] += delta * attributes.acceleration[Y]
 
-            attributes.position[Y] += delta * attributes.velocity[Y] * self.UNITS_PER_TILE
+            dx = delta * attributes.velocity[X] * self.UNITS_PER_TILE
+            collision_detector.handle_collisions_x(actor, dx)
+            dy = delta * attributes.velocity[Y] * self.UNITS_PER_TILE
+            collision_detector.handle_collisions_y(actor, dy)
+
+            """
             if(attributes.position[Y] < 0):
                 attributes.position[Y] = 0
                 attributes.velocity[Y] = 0
@@ -89,11 +96,11 @@ class PhysicsManager(object):
             elif(attributes.position[X] > self.world_width - attributes.width):
                 attributes.position[X] = self.world_width - attributes.width
             if attributes.velocity[X] != 0:
-                collision_detector.handle_collisions_x(actor)
+                collision_detector.handle_collisions_x(actor)"""
 
         #set real screen positions
         for actor, attributes in self._actors.iteritems():
-            actor.position = (attributes.position[X] * tileSize, attributes.position[1] * tileSize)
+            actor.position = (attributes.position[X] * tileSize, attributes.position[Y] * tileSize)
 
     def is_space_filled(self, space):
         for actor, attributes in self._actors.iteritems():
@@ -101,5 +108,7 @@ class PhysicsManager(object):
                 return True
         return False
 
-    def was_collided(self, actor, side):
-        return self._actors[actor].recent_impact_sides.get(side, None)
+    def received_impact(self, actor, side):
+        return self._actors[actor].received_impacts.get(side, None)
+    def gave_impact(self, actor, side):
+        return self._actors[actor].given_impacts.get(side, None)
