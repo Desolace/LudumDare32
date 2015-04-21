@@ -8,6 +8,7 @@ from input_manager import CustomEvents
 
 class Actor(object):
     MAIN_CHARACTER = ("characters/guy1.png",4, 8)
+    ENEMY_STEAK = ("characters/steak.png",5, 5)
 
     _hash = None
     surface = None
@@ -115,7 +116,7 @@ class Enemy(Actor):
     @staticmethod
     def generate(model, physics_manager):
         if model == "basic":
-            enemy = Enemy(pygame.image.load(Actor.MAIN_CHARACTER[0]), Actor.MAIN_CHARACTER[1], Actor.MAIN_CHARACTER[2], physics_manager)
+            enemy = Enemy(pygame.image.load(Actor.ENEMY_STEAK[0]), Actor.ENEMY_STEAK[1], Actor.ENEMY_STEAK[2], physics_manager)
             enemy.points_per_tile = 10
             return enemy
 
