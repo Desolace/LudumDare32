@@ -7,8 +7,6 @@ from collisions import ImpactSide
 from input_manager import CustomEvents
 
 class Actor(object):
-    MAIN_CHARACTER = ("characters/guy1.png",4, 8)
-
     _hash = None
     surface = None
     widthInTiles, heightInTiles = None, None
@@ -16,12 +14,12 @@ class Actor(object):
     _tile_size = None
     DISSOLVE_DURATION_SECONDS = 1
 
-    def __init__(self, surface, wTiles, hTiles):
-        self._baseSurface = surface
-        self._baseSurface.set_colorkey((1,1,1))
-        self._hash = hash(self._baseSurface)
-        self.widthInTiles = wTiles
-        self.heightInTiles = hTiles
+    def __init__(self, surface, width_tiles, height_tiles):
+        self._base_surface = surface
+        self._base_surface.set_colorkey((1,1,1))
+        self._hash = hash(self._base_surface)
+        self.widthInTiles = width_tiles
+        self.heightInTiles = height_tiles
         self.points_per_tile = 0
         self._is_dissolving = False
         self.dissolved = False
@@ -39,15 +37,10 @@ class Actor(object):
 
             self.total_tile_count = len(self.tiles_to_dissolve)
 
-    @staticmethod
-    def genMainCharacter():
-        return Actor(pygame.image.load(Actor.MAIN_CHARACTER[0]), Actor.MAIN_CHARACTER[1], Actor.MAIN_CHARACTER[2])
-
     def update(self, delta, tile_size):
         if tile_size != self._tile_size:
-            self.surface = pygame.transform.smoothscale(self._baseSurface, (self.widthInTiles*tile_size, self.heightInTiles*tile_size))
+            self.surface = pygame.transform.smoothscale(self._base_surface, (self.widthInTiles*tile_size, self.heightInTiles*tile_size))
             self._tile_size = tile_size
-
         if self._is_dissolving:
             if len(self.tiles_to_dissolve) > 0:
                 percent_to_dissolve = delta / Actor.DISSOLVE_DURATION_SECONDS
@@ -73,17 +66,19 @@ class Actor(object):
         return surf_rect.move(*self.position)
 
 class Block(Actor):
-    def __init__(self, surface, wTiles, hTiles):
-        Actor.__init__(self, surface, wTiles, hTiles)
+    def __init__(self, surface, width_tiles, height_tiles):
+        Actor.__init__(self, surface, width_tiles, height_tiles)
 
 LEFT, RIGHT = -1, 1
 ENEMY_SPEED = 1
 
 class Enemy(Actor):
-    def __init__(self, surface, wTiles, hTiles, physics_manager):
+    ROCKY = ("characters/rocky.png", 4, 4)
+
+    def __init__(self, surface, width_tiles, height_tiles, physics_manager):
         self.physics_manager = physics_manager
         self._horizontal_direction = LEFT
-        Actor.__init__(self, surface, wTiles, hTiles)
+        Actor.__init__(self, surface, width_tiles, height_tiles)
 
     def update(self, delta, tile_size):
         Actor.update(self, delta, tile_size)
@@ -116,24 +111,56 @@ class Enemy(Actor):
     @staticmethod
     def generate(model, physics_manager):
         if model == "basic":
-            enemy = Enemy(pygame.image.load(Actor.MAIN_CHARACTER[0]), Actor.MAIN_CHARACTER[1], Actor.MAIN_CHARACTER[2], physics_manager)
+            enemy = Enemy(pygame.image.load(Enemy.ROCKY[0]), Enemy.ROCKY[1], Enemy.ROCKY[2], physics_manager)
             enemy.points_per_tile = 10
             return enemy
 
-class Player(Actor):
-    def __init__(self, surface, wTiles, hTiles, physics_manager):
+class AnimatedActor(Actor):
+    def __init__(self, left_surface, right_surface, width_tiles, height_tiles, physics_manager):
+        assert left_surface.get_size() == right_surface.get_size()
+        Actor.__init__(self, right_surface, width_tiles, height_tiles)
+        self._base_left_surface = left_surface
+        self._base_right_surface = right_surface
+
+    def update(self, delta, tile_size):
+        if tile_size != self._tile_size:
+            size = (self.widthInTiles*tile_size, self.heightInTiles*tile_size)
+            self._left_surface = pygame.transform.smoothscale(self._base_left_surface, size)
+            self._right_surface = pygame.transform.smoothscale(self._base_right_surface, size)
+            self._tile_size = tile_size
+
+        previous_surface = self.surface
+        self.surface = self._left_surface
+        Actor.update(self, delta, tile_size)
+        self.surface = self._right_surface
+        Actor.update(self, delta, tile_size)
+
+        velocity = self.physics_manager.get_velocity_x(self)
+        if velocity > 0: #going right
+            self.surface = self._right_surface
+        elif velocity < 0: #going left
+            self.surface = self._left_surface
+        elif previous_surface is not None:
+            self.surface = previous_surface
+        else:
+            self.surface = self._right_surface
+
+class Player(AnimatedActor):
+    MAIN_CHARACTER = ("characters/guyL.png", "characters/guyR.png", 4, 8)
+
+    def __init__(self, left_surface, right_surface, width_tiles, height_tiles, physics_manager):
         self.physics_manager = physics_manager
-        Actor.__init__(self, surface, wTiles, hTiles)
+        AnimatedActor.__init__(self, left_surface, right_surface, width_tiles, height_tiles, physics_manager)
         self.name ="player"
 
     def update(self, delta, tile_size):
         if isinstance(self.physics_manager.received_impact(self, ImpactSide.TOP), Block):
             self.die()
-        Actor.update(self, delta, tile_size)
+        AnimatedActor.update(self, delta, tile_size)
 
     def die(self):
         pygame.event.post(pygame.event.Event(CustomEvents.PLAYERDEAD))
 
     @staticmethod
     def genMainCharacter(physics_manager):
-        return Player(pygame.image.load(Actor.MAIN_CHARACTER[0]), Actor.MAIN_CHARACTER[1], Actor.MAIN_CHARACTER[2], physics_manager)
+        return Player(pygame.image.load(Player.MAIN_CHARACTER[0]), pygame.image.load(Player.MAIN_CHARACTER[1]), Player.MAIN_CHARACTER[2], Player.MAIN_CHARACTER[3], physics_manager)
