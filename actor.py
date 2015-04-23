@@ -74,6 +74,7 @@ ENEMY_SPEED = 1
 
 class Enemy(Actor):
     ROCKY = ("characters/rocky.png", 4, 4)
+    SPIKEY = ("characters/spikey.png", 5, 4)
 
     def __init__(self, surface, width_tiles, height_tiles, physics_manager):
         self.physics_manager = physics_manager
@@ -110,8 +111,12 @@ class Enemy(Actor):
 
     @staticmethod
     def generate(model, physics_manager):
-        if model == "basic":
+        if model == "rocky":
             enemy = Enemy(pygame.image.load(Enemy.ROCKY[0]), Enemy.ROCKY[1], Enemy.ROCKY[2], physics_manager)
+            enemy.points_per_tile = 10
+            return enemy
+        elif model == "spikey":
+            enemy = Enemy(pygame.image.load(Enemy.SPIKEY[0]), Enemy.SPIKEY[1], Enemy.SPIKEY[2], physics_manager)
             enemy.points_per_tile = 10
             return enemy
 

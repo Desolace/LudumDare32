@@ -90,12 +90,12 @@
   ],
   "enemies":[
     {
-      "type":"basic",
+      "type":"rocky",
       "x":30,
       "y":30
     },
     {
-      "type":"basic",
+      "type":"spikey",
       "x":70,
       "y":40,
       "dissolvable":true
