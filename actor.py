@@ -5,6 +5,7 @@ import math
 from physics_manager import PhysicsManager
 from collisions import ImpactSide
 from input_manager import CustomEvents
+from sound_manager import SoundEffect
 
 class Actor(object):
     _hash = None
@@ -152,9 +153,12 @@ class AnimatedActor(Actor):
 
 class Player(AnimatedActor):
     MAIN_CHARACTER = ("characters/guyL.png", "characters/guyR.png", 4, 8)
+    RUN = 'player_run'
+    JUMP = 'player_jump'
 
-    def __init__(self, left_surface, right_surface, width_tiles, height_tiles, physics_manager):
+    def __init__(self, left_surface, right_surface, width_tiles, height_tiles, physics_manager, sound_manager):
         self.physics_manager = physics_manager
+        self.sound_manager = sound_manager
         AnimatedActor.__init__(self, left_surface, right_surface, width_tiles, height_tiles, physics_manager)
         self.name ="player"
 
@@ -163,9 +167,19 @@ class Player(AnimatedActor):
             self.die()
         AnimatedActor.update(self, delta, tile_size)
 
+        if self.sound_manager is not None: #play needed sounds
+            if self.physics_manager.get_velocity_x(self) != 0:
+                self.sound_manager.enable_sound(Player.RUN, SoundEffect.Run)
+            else:
+                self.sound_manager.disable_sound(Player.RUN)
+            if self.physics_manager.get_velocity_y(self) < 0:
+                self.sound_manager.enable_sound(Player.JUMP, SoundEffect.Jump)
+            else:
+                self.sound_manager.disable_sound(Player.JUMP)
+
     def die(self):
         pygame.event.post(pygame.event.Event(CustomEvents.PLAYERDEAD))
 
     @staticmethod
-    def genMainCharacter(physics_manager):
-        return Player(pygame.image.load(Player.MAIN_CHARACTER[0]), pygame.image.load(Player.MAIN_CHARACTER[1]), Player.MAIN_CHARACTER[2], Player.MAIN_CHARACTER[3], physics_manager)
+    def genMainCharacter(physics_manager, sound_manager):
+        return Player(pygame.image.load(Player.MAIN_CHARACTER[0]), pygame.image.load(Player.MAIN_CHARACTER[1]), Player.MAIN_CHARACTER[2], Player.MAIN_CHARACTER[3], physics_manager, sound_manager)

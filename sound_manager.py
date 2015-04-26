@@ -1,71 +1,40 @@
 import pygame
 import sys
+from input_manager import Actions
 
+class SoundEffect(object):
+    def __init__(self, filename, loops):
+        self.filename, self.loops = filename, loops
+SoundEffect.Run = SoundEffect(filename='sounds/run.wav', loops=-1)
+SoundEffect.Jump = SoundEffect(filename='sounds/jump.wav', loops=0)
 
 class SoundManager(object):
 
-    _volume = 1.0
-    _muted = False
-    _sounds = []
-
-    def __init__(self,contEffect=None):
-        self.contEffect = contEffect
-        self._sounds = [contEffect]
-        self.soundList = {'run' : 0}
+    def __init__(self):
+        self._volume = 1.0
+        self._muted = False
+        self._sounds = {}
 
     def mute(self):
         self._muted = True
-        for sound in self._sounds:
+        for sound in self._sounds.itervalues():
             if sound is not None:
                 sound.set_volume(0)
     def unmute(self):
         self._muted = False
-        for sound in self._sounds:
+        for sound in self._sounds.itervalues():
             if sound is not None:
                 sound.set_volume(self._volume)
 
-    def set_background_music(level):
-        backgroundMusic.stop()
-        backFilename = ""
-        if level == 1:
-            backFilename = ""
-        try:
-            backgroundMusic = pygame.mixer.Sound(backFilename)
-            backgroundMusic.play(loops = -1)
-        except:
-            print "error"
-
-    def play_one_sound_effect(self,effect):
-        effectFilename = ''
-        if effect == "jump":
-            effectFilename = 'sounds/jump.wav'
-        try:
-            soundEffect = pygame.mixer.Sound(effectFilename)
+    def enable_sound(self, key, definition):
+        if key not in self._sounds:
+            sound = pygame.mixer.Sound(definition.filename)
             if self._muted:
-                soundEffect.set_volume(0)
-            soundEffect.play(loops = 0)
-            self._sounds.append(soundEffect)
-        except Exception as e:
-            print e
+                sound.set_volume(0)
+            sound.play(loops = definition.loops)
+            self._sounds[key] = sound
 
-    def start_cont_effect(self,effect):
-        contFilename = ''
-        if effect == 'run':
-            self.soundList[effect] += 1
-            if self.soundList[effect] == 1:
-                contFilename = 'sounds/run.wav'
-                try:
-                    self.contEffect = pygame.mixer.Sound(contFilename)
-                    self.contEffect.play(loops = -1)
-                    self._sounds.append(self.contEffect)
-                except Exception as e:
-                    print e
-
-    def stop_cont_effect(self,effect):
-        try:
-            self.soundList[effect] -= 1
-            if self.soundList[effect] == 0:
-                self.contEffect.stop()
-                self._sounds.remove(self._contEffect)
-        except Exception as e:
-            print e
+    def disable_sound(self, key):
+        if key in self._sounds:
+            self._sounds[key].stop()
+            del self._sounds[key]
