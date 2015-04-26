@@ -3,7 +3,9 @@ import pygame
 from actor import Actor, Enemy, Block
 
 """
-An instance of the given level. Handles creation of all static actors in the level.
+An instance of the given level.
+Handles creation of all static actors in the level, plus updating all actors.
+Rendering should be handled in a Viewport wrapper.
 """
 class Level(object):
 
@@ -69,3 +71,6 @@ class Level(object):
 
         for actor in self.actors:
             actor.update(delta, tile_size)
+
+    def get_rect(self):
+        return self.surface.get_rect()

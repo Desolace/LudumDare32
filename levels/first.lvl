@@ -1,6 +1,8 @@
 {
-  "w":100,
-  "h":60,
+  "w":200,
+  "h":70,
+  "vw":100,
+  "vh":60,
   "map": [
     {
       "name": "some dirt",
@@ -15,8 +17,8 @@
     {
       "name":"floor",
       "x":0,
-      "y":59,
-      "w":100,
+      "y":69,
+      "w":200,
       "h":1,
       "mat":"stone",
       "dissolvable":false,
@@ -24,27 +26,27 @@
     },
     {
       "name": "left wall",
-      "x":-1,
+      "x":0,
       "y":0,
       "w":1,
-      "h":60,
+      "h":70,
       "mat":"stone",
       "weight":0
     },
     {
       "name": "right wall",
-      "x":100,
+      "x":199,
       "y":0,
       "w":1,
-      "h":60,
+      "h":70,
       "mat":"stone",
       "weight":0
     },
     {
       "name": "ceiling",
       "x":0,
-      "y":-1,
-      "w":100,
+      "y":0,
+      "w":200,
       "h":1,
       "mat":"stone",
       "weight":0
