@@ -4,9 +4,25 @@ import sys
 
 class SoundManager(object):
 
+    _volume = 1.0
+    _muted = False
+    _sounds = []
+
     def __init__(self,contEffect=None):
         self.contEffect = contEffect
+        self._sounds = [contEffect]
         self.soundList = {'run' : 0}
+
+    def mute(self):
+        self._muted = True
+        for sound in self._sounds:
+            if sound is not None:
+                sound.set_volume(0)
+    def unmute(self):
+        self._muted = False
+        for sound in self._sounds:
+            if sound is not None:
+                sound.set_volume(self._volume)
 
     def set_background_music(level):
         backgroundMusic.stop()
@@ -25,7 +41,10 @@ class SoundManager(object):
             effectFilename = 'sounds/jump.wav'
         try:
             soundEffect = pygame.mixer.Sound(effectFilename)
+            if self._muted:
+                soundEffect.set_volume(0)
             soundEffect.play(loops = 0)
+            self._sounds.append(soundEffect)
         except Exception as e:
             print e
 
@@ -38,6 +57,7 @@ class SoundManager(object):
                 try:
                     self.contEffect = pygame.mixer.Sound(contFilename)
                     self.contEffect.play(loops = -1)
+                    self._sounds.append(self.contEffect)
                 except Exception as e:
                     print e
 
@@ -46,5 +66,6 @@ class SoundManager(object):
             self.soundList[effect] -= 1
             if self.soundList[effect] == 0:
                 self.contEffect.stop()
+                self._sounds.remove(self._contEffect)
         except Exception as e:
             print e
