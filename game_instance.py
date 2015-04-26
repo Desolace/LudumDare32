@@ -10,6 +10,7 @@ from sounds import SoundManager
 from transmutation_manager import TransmutationManager
 from material_manager import MaterialManager
 from viewport import Viewport
+from ui_overlay import UIOverlay, TextElement
 
 """
 Manages all state for a given run of a level
@@ -29,6 +30,9 @@ class GameInstance(object):
 
         self.viewport = Viewport(config["width"], config["height"], self.main_char, self.level, 100)
         self.picking_handler = PickingHandler(self.viewport, self.transmutation_manager, self.physics_manager)
+
+        self.ui_overlay = UIOverlay()
+        self.ui_overlay.text_elements["score"] = TextElement((20, 20), 20, (0, 0, 0), "0 pts")
 
         self.physics_manager.add_actor(self.main_char, weight=3)
         self.physics_manager.set_position(self.main_char, (25, 10))
@@ -91,6 +95,8 @@ class GameInstance(object):
         self.physics_manager.update(delta, self.tile_size)
         self.picking_handler.update(delta, self.tile_size)
         self.transmutation_manager.update(delta)
+        self.ui_overlay.text_elements["score"].value = "{0} pts".format(self.transmutation_manager.current_points)
+        self.ui_overlay.update(delta)
 
         self.level.update(delta, self.tile_size)
         self.viewport.update(delta)
@@ -104,12 +110,14 @@ class GameInstance(object):
         mouse_position = pygame.mouse.get_pos()
         for actor in self.level.actors:
             if self._highlight_actors and self.picking_handler.is_picked(actor, mouse_position) and actor.dissolvable:
-                picker = (pygame.Surface(actor.surface.get_size()), actor.position)
+                picker = (pygame.Surface(actor.surface.get_size()), actor.position, True)
                 picker[0].set_colorkey((0,0,0))
                 pygame.draw.rect(picker[0], tuple(self.config["picking_color"]), picker[0].get_rect(), 2)
                 additional_drawables.append(picker)
 
-        additional_drawables.append((self.picking_handler.surface, self.picking_handler.position))
+        additional_drawables.append((self.picking_handler.surface, self.picking_handler.position, True))
+
+        additional_drawables += self.ui_overlay.get_drawables()
 
         screen.blit(self.viewport.render(additional_drawables), (0,0))
 
