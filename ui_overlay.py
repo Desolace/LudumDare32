@@ -17,7 +17,7 @@ class UIOverlay(object):
 
     def update(self, delta):
         self.labels = []
-        for text_element in self.text_elements.itervalues():
+        for text_element in self.text_elements.values():
             label = self._cached_font(text_element.size).render(text_element.value, 1, text_element.color)
             self.labels.append((label, text_element.position, False))
 

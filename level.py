@@ -61,7 +61,7 @@ class Level(object):
     """
     def update(self, delta, tile_size):
         if(tile_size != self._tile_size):
-            self.surface = pygame.transform.scale(self.surface, (self.width * tile_size, self.height * tile_size))
+            self.surface = pygame.transform.scale(self.surface, (int(self.width * tile_size), int(self.height * tile_size)))
             self._tile_size = tile_size
 
         dissolved_actors = [a for a in self.actors if a.dissolved]

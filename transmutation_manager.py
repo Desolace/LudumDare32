@@ -52,9 +52,7 @@ class TransmutationManager(object):
             delta_tiles_removed = new_tiles_removed - self._tiles_removed[actor]
             self._tiles_removed[actor] = new_tiles_removed
             self.current_points += delta_tiles_removed * actor.points_per_tile
-            print "User has {0} points to spend".format(self.current_points)
 
         done_dissolving = [actor for actor in self._sucking if actor.dissolved]
         for actor in done_dissolving:
             self._sucking.remove(actor)
-            print "User has {0} points to spend".format(self.current_points)

@@ -17,7 +17,6 @@ class MainMenu(object):
     def _handle_events(self, events):
         for event in events:
             event_name = event if isinstance(event, int) else event[0]
-            print event_name
             if event_name == Actions.USER_MENU_CLICK:
                 go_rect = self._go_button.get_rect().move(self._go_button_position)
                 if go_rect.collidepoint(event[1]):
