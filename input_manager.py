@@ -27,6 +27,8 @@ class Actions(object):
     GAME_WON=19
     GAME_OVER=21
     START_GAME=20
+    MUTE=22
+    UNMUTE=23
 
 class CustomEvents:
     CHOOSEMAT=USEREVENT+1
@@ -45,10 +47,23 @@ class InputManager(object):
         actions = []
 
         for event in pygame.event.get():
-            #User quits
+            """
+            Global actions, can happen at any time
+            """
             if event.type == QUIT or (event.type == KEYDOWN and (event.key == K_q or event.key == K_ESCAPE)):
                 actions.append(Actions.QUIT)
+            elif event.type == KEYDOWN and event.key == K_m:
+                if Actions.MUTE in self._state:
+                    self._state.remove(Actions.MUTE)
+                    actions.append(Actions.UNMUTE)
+                else:
+                    self._state.append(Actions.MUTE)
+                    actions.append(Actions.MUTE)
             elif self._in_game:
+                """
+                Game is in session
+                User is playing the game
+                """
                 if not self._paused:
                     if event.type == CustomEvents.CHOOSEMAT:
                         actions.append((Actions.CHOOSE_MATERIAL, event.name))
@@ -122,6 +137,9 @@ class InputManager(object):
                     elif event.type == USEREVENT:
                         actions.append((Actions.USER_BLOW, event.bounds))
                 elif self._paused:
+                    """
+                    Game is running, but is paused
+                    """
                     if event.type == CustomEvents.CLOSEINV and Actions.TOGGLE_INVENTORY in self._state:
                         self._state.remove(Actions.TOGGLE_INVENTORY)
                         actions.append(Actions.TOGGLE_INVENTORY)
@@ -139,6 +157,9 @@ class InputManager(object):
                         if event.button == 1:
                             actions.append((Actions.USER_MENU_CLICK, event.pos))
             else:
+                """
+                Not in game, probably at a menu
+                """
                 if event.type == MOUSEBUTTONUP:
                     if event.button == 1:
                         actions.append((Actions.USER_MENU_CLICK, event.pos))
