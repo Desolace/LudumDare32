@@ -1,4 +1,5 @@
 import pygame
+from sys import platform as _platform
 
 class TextElement(object):
     def __init__(self, position, size, color, value=""):
@@ -12,7 +13,10 @@ class UIOverlay(object):
 
     def _cached_font(self, size):
         if size not in self._fonts:
-            self._fonts[size] = pygame.font.Font("/Library/Fonts/Andale Mono.ttf", size)
+            if _platform == "darwin":
+                self._fonts[size] = pygame.font.Font("/Library/Fonts/Andale Mono.ttf", size)
+            elif _platform == "linux2":
+                self._fonts[size] = pygame.font.Font("/usr/share/fonts/truetype/ubuntu-font-family/UbuntuMono-R.ttf", size)
         return self._fonts[size]
 
     def update(self, delta):
