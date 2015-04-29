@@ -50,7 +50,7 @@ class Actor(object):
                 to_dissolve = random.sample(self.tiles_to_dissolve, num_tiles_to_dissolve)
                 for tile in to_dissolve:
                     self.tiles_to_dissolve.remove(tile)
-                    self.surface.fill((1,1,1), pygame.Rect(tile[0] * tile_size, tile[1] * tile_size, tile_size, tile_size))
+                    self.surface.fill((1,1,1,0), pygame.Rect(tile[0] * tile_size, tile[1] * tile_size, tile_size, tile_size))
             else:
                 self._is_dissolving = False
                 self.dissolved = True

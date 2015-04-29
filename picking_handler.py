@@ -7,16 +7,19 @@ class PickingHandler(object):
     SUCCESS_COLOR = (0,0,255)
     ERROR_COLOR = (255,0,0)
 
-    def __init__(self, transmutation_manager, physics_manager):
+    def __init__(self, viewport, transmutation_manager, physics_manager):
+        self.viewport = viewport
         self.transmutation_manager = transmutation_manager
         self.physics_manager = physics_manager
         self._user_selection_bound1 = None
         self._user_selection_bound2 = None
 
     def is_picked(self, actor, position):
+        position = self.viewport.convert_position(position)
         return actor.get_rect().collidepoint(position)
 
     def tile_at_point(self, position, tile_size):
+        position = self.viewport.convert_position(position)
         return (int(position[0] / tile_size), int(position[1] / tile_size))
 
     def start_user_selection(self, position, tile_size):
