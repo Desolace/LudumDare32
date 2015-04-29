@@ -2,7 +2,6 @@ import pygame
 import sys
 from pygame.locals import *
 import json
-from sounds import SoundManager
 from input_manager import InputManager, Actions
 import screens, menu
 

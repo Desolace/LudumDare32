@@ -6,7 +6,7 @@ from actor import Actor, Player
 from input_manager import Actions, CustomEvents
 from physics_manager import PhysicsManager
 from picking_handler import PickingHandler
-from sounds import SoundManager
+from sound_manager import SoundManager
 from transmutation_manager import TransmutationManager
 from material_manager import MaterialManager
 
@@ -18,18 +18,18 @@ class GameInstance(object):
     def __init__(self, config, level_name):
         self.config = config
         self.physics_manager = PhysicsManager()
+        self.sound_manager = SoundManager()
         self.material_manager = MaterialManager(config["material_file"])
         self.transmutation_manager = TransmutationManager(self.material_manager)
         self.transmutation_manager.blow_key = "stone"
         self.picking_handler = PickingHandler(self.transmutation_manager, self.physics_manager)
         self.level = Level("{0}/{1}.lvl".format(config["levels_dir"], level_name), self.physics_manager, self.material_manager)
 
-        self.main_char = Player.genMainCharacter(self.physics_manager)
+        self.main_char = Player.genMainCharacter(self.physics_manager, self.sound_manager)
 
         self.physics_manager.add_actor(self.main_char, weight=3)
         self.physics_manager.set_position(self.main_char, (25, 10))
         self._highlight_actors = False
-        self.userSounds = SoundManager()
 
     """
     Internally sets and returns the tilesize required to display on the given screen
@@ -48,20 +48,15 @@ class GameInstance(object):
 
             if event_name == Actions.START_USER_LEFT:
                 self.physics_manager.add_velocity_x(self.main_char, -self.config["user_motion_speed"])
-                self.userSounds.start_cont_effect('run')
             elif event_name == Actions.START_USER_RIGHT:
                 self.physics_manager.add_velocity_x(self.main_char, self.config["user_motion_speed"])
-                self.userSounds.start_cont_effect('run')
             elif event_name == Actions.START_USER_UP:
                 if self.physics_manager.get_velocity_y(self.main_char) == 0:
                     self.physics_manager.add_velocity_y(self.main_char, -self.config["user_jump_speed"])
-                    self.userSounds.play_one_sound_effect('jump')
             elif event_name == Actions.STOP_USER_LEFT:
                 self.physics_manager.add_velocity_x(self.main_char, self.config["user_motion_speed"])
-                self.userSounds.stop_cont_effect('run')
             elif event_name == Actions.STOP_USER_RIGHT:
                 self.physics_manager.add_velocity_x(self.main_char, -self.config["user_motion_speed"])
-                self.userSounds.stop_cont_effect('run')
             elif event_name == Actions.USER_SUCK:
                 [self.transmutation_manager.suck(actor) for actor in self.level.actors if self.picking_handler.is_picked(actor, event[1])]
             elif event_name == Actions.USER_BLOW:
@@ -79,6 +74,10 @@ class GameInstance(object):
                 self._highlight_actors = False
             elif event_name == Actions.CHOOSE_MATERIAL:
                 self.transmutation_manager.blow_key = event[1]
+            elif event_name == Actions.MUTE:
+                self.sound_manager.mute()
+            elif event_name == Actions.UNMUTE:
+                self.sound_manager.unmute()
 
     """
     Updates all game objects and manager systems based on the frame time delta
