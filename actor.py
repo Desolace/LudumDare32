@@ -40,7 +40,7 @@ class Actor(object):
 
     def update(self, delta, tile_size):
         if tile_size != self._tile_size:
-            self.surface = pygame.transform.smoothscale(self._base_surface, (self.widthInTiles*tile_size, self.heightInTiles*tile_size))
+            self.surface = pygame.transform.smoothscale(self._base_surface, (int(self.widthInTiles*tile_size), int(self.heightInTiles*tile_size)))
             self._tile_size = tile_size
         if self._is_dissolving:
             if len(self.tiles_to_dissolve) > 0:
@@ -130,7 +130,7 @@ class AnimatedActor(Actor):
 
     def update(self, delta, tile_size):
         if tile_size != self._tile_size:
-            size = (self.widthInTiles*tile_size, self.heightInTiles*tile_size)
+            size = (int(self.widthInTiles*tile_size), int(self.heightInTiles*tile_size))
             self._left_surface = pygame.transform.smoothscale(self._base_left_surface, size)
             self._right_surface = pygame.transform.smoothscale(self._base_right_surface, size)
             self._tile_size = tile_size

@@ -83,7 +83,7 @@ while True:
         game.doFrame(surface, delta, events)
 
     #display any active ui screens
-    for screen in screens.itervalues():
+    for screen in screens.values():
         screen.doFrame(surface, delta, events)
 
     #give it to the user

@@ -57,18 +57,18 @@ class PhysicsManager(object):
         return self._actors[actor].velocity[X]
     def get_velocity_y(self, actor):
         return self._actors[actor].velocity[Y]
-    def set_position(self, actor, (positionX, positionY)):
-        self._actors[actor].position = [positionX, positionY]
+    def set_position(self, actor, position):
+        self._actors[actor].position = list(position)
 
     def update(self, delta, tileSize):
         collision_detector = CollisionDetector(self._actors, self._collision_precision)
 
         #clear collisions
-        for actor, attributes in self._actors.iteritems():
+        for actor, attributes in self._actors.items():
             attributes.received_impacts = {}
             attributes.given_impacts = {}
 
-        for actor, attributes in self._actors.iteritems():
+        for actor, attributes in self._actors.items():
             if attributes.weight != 0:
                 attributes.acceleration[Y] = GRAVITY
             attributes.velocity[X] += delta * attributes.acceleration[X] #every frame, we update the velocity based on how fast it is changing
@@ -80,11 +80,11 @@ class PhysicsManager(object):
             collision_detector.handle_collisions_y(actor, dy)
 
         #set real screen positions
-        for actor, attributes in self._actors.iteritems():
+        for actor, attributes in self._actors.items():
             actor.position = (attributes.position[X] * tileSize, attributes.position[Y] * tileSize)
 
     def is_space_filled(self, space):
-        for actor, attributes in self._actors.iteritems():
+        for actor, attributes in self._actors.items():
             if attributes.get_rect().colliderect(space):
                 return True
         return False

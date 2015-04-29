@@ -12,7 +12,7 @@ class CollisionDetector(object):
         self._precision = precision
 
     def _get_collisions(self, actor, change_box):
-        for other_actor, other_attributes in self._actors.iteritems():
+        for other_actor, other_attributes in self._actors.items():
             if actor != other_actor and other_attributes.collidable and change_box.colliderect(other_attributes.get_scaled_rect(self._precision)):
                 yield other_actor
 
