@@ -24,7 +24,7 @@ class Level(object):
             physics_manager.world_height = self.height
 
             self.surface = pygame.Surface((self.width, self.height))
-            self.surface.fill((255,255,255))
+            self.surface.fill(tuple(self._level_def.get("fill", [0,0,0])))
 
             for item in self._level_def['map']:
                 material = material_manager.get_material(item['mat'], (item['w'], item['h']))
