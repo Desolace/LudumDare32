@@ -18,6 +18,7 @@ class Actions(object):
     START_DISSOLVE_SELECTION=11
     STOP_DISSOLVE_SELECTION=12
 
+    TOGGLE_SHOW_FPS=24
     TOGGLE_PAUSE=15
     TOGGLE_INVENTORY=16
 
@@ -59,6 +60,8 @@ class InputManager(object):
                 else:
                     self._state.append(Actions.MUTE)
                     actions.append(Actions.MUTE)
+            elif event.type == KEYDOWN and event.key == K_f:
+                actions.append(Actions.TOGGLE_SHOW_FPS)
             elif self._in_game:
                 """
                 Game is in session
