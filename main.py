@@ -1,5 +1,6 @@
 import json
 from game_loop import Game
+from debug_console import DebugConsole
 from argparse import ArgumentParser
 
 def main():
@@ -9,6 +10,7 @@ def main():
     parser.add_argument('--max_fps', type=int, help="The maximum framerate of the game")
     parser.add_argument('--width', type=int, help="Width of the screen")
     parser.add_argument('--height', type=int, help="Height of the screen")
+    parser.add_argument('--debug', action='store_true', help="If enabled, stdin will function as a full debug console")
 
     args = parser.parse_args()
 
@@ -22,10 +24,14 @@ def main():
         config['width'] = args.width
     if args.height is not None:
         config['height'] = args.height
-    if args.show_fps is not None:
+    if args.show_fps:
         config['show_fps'] = args.show_fps
+    if args.debug:
+        config['use_debug_console'] = args.debug
 
     game = Game(config)
+    if config.get("use_debug_console", False):
+        game = DebugConsole(game)
 
     while game.is_running:
         game.run_loop()
