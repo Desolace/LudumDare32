@@ -12,6 +12,16 @@ if sys.version_info[0] == 3:
 else:
     from Queue import Queue
 
+"""
+The debug console reads from standard input.
+It accepts any expression.
+The print statement is mapped to the print() function for printing.
+The game state is mapped to a 'game' variable.
+Since only expressions are accepted, use setattr to assign values to the game state.
+Note that this could be a security hole in production, builtins are allowed, and so the __import__ function is available.
+
+Functions as a wrapper around a Game object, passing control to the game object when needed.
+"""
 class DebugConsole(object):
     def __init__(self, state):
         self._command_queue = Queue()
