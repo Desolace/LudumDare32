@@ -70,57 +70,6 @@ class Block(Actor):
     def __init__(self, surface, width_tiles, height_tiles):
         Actor.__init__(self, surface, width_tiles, height_tiles)
 
-LEFT, RIGHT = -1, 1
-ENEMY_SPEED = 1
-
-class Enemy(Actor):
-    ROCKY = ("characters/rocky.png", 4, 4)
-    SPIKEY = ("characters/spikey.png", 5, 4)
-
-    def __init__(self, surface, width_tiles, height_tiles, physics_manager):
-        self.physics_manager = physics_manager
-        self._horizontal_direction = LEFT
-        Actor.__init__(self, surface, width_tiles, height_tiles)
-
-    def update(self, delta, tile_size):
-        Actor.update(self, delta, tile_size)
-
-        if self._horizontal_direction == LEFT:
-            rect = self.get_rect()
-            floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomleft[0] / tile_size) - 1, (rect.bottomleft[1] / tile_size), 1, 1))
-            if not floor_tile_filled or self.physics_manager.gave_impact(self, ImpactSide.LEFT) is not None or self.physics_manager.received_impact(self, ImpactSide.LEFT) is not None:
-                self.physics_manager.set_velocity_x(self, 0)
-                self._horizontal_direction = RIGHT
-            else:
-                self.physics_manager.set_velocity_x(self, LEFT * ENEMY_SPEED)
-        elif self._horizontal_direction == RIGHT:
-            rect = self.get_rect()
-            floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomright[0] / tile_size) + 1, (rect.bottomright[1] / tile_size), 1, 1))
-            if not floor_tile_filled or self.physics_manager.gave_impact(self, ImpactSide.RIGHT) is not None or self.physics_manager.received_impact(self, ImpactSide.RIGHT) is not None:
-                self.physics_manager.set_velocity_x(self, 0)
-                self._horizontal_direction = LEFT
-            else:
-                self.physics_manager.set_velocity_x(self, RIGHT * ENEMY_SPEED)
-
-        #kill self if hit on the head by a block
-        #also kill self if it hits the floor
-        if isinstance(self.physics_manager.received_impact(self, ImpactSide.TOP), Block):
-            self.crush()
-
-    def crush(self):
-        self.dissolved = True
-
-    @staticmethod
-    def generate(model, physics_manager):
-        if model == "rocky":
-            enemy = Enemy(pygame.image.load(Enemy.ROCKY[0]), Enemy.ROCKY[1], Enemy.ROCKY[2], physics_manager)
-            enemy.points_per_tile = 10
-            return enemy
-        elif model == "spikey":
-            enemy = Enemy(pygame.image.load(Enemy.SPIKEY[0]), Enemy.SPIKEY[1], Enemy.SPIKEY[2], physics_manager)
-            enemy.points_per_tile = 10
-            return enemy
-
 class AnimatedActor(Actor):
     def __init__(self, left_surface, right_surface, width_tiles, height_tiles, physics_manager):
         assert left_surface.get_size() == right_surface.get_size()
@@ -183,3 +132,58 @@ class Player(AnimatedActor):
     @staticmethod
     def genMainCharacter(physics_manager, sound_manager):
         return Player(pygame.image.load(Player.MAIN_CHARACTER[0]), pygame.image.load(Player.MAIN_CHARACTER[1]), Player.MAIN_CHARACTER[2], Player.MAIN_CHARACTER[3], physics_manager, sound_manager)
+
+LEFT, RIGHT = -1, 1
+ENEMY_SPEED = 1
+
+class Enemy(AnimatedActor):
+    ROCKY = ("characters/rocky.png", 4, 4)
+    SPIKEY = ("characters/spikey.png", 5, 4)
+
+    def __init__(self, left_surface, right_surface, width_tiles, height_tiles, physics_manager):
+        self.physics_manager = physics_manager
+        self._horizontal_direction = LEFT
+        AnimatedActor.__init__(self, left_surface, right_surface, width_tiles, height_tiles, physics_manager)
+
+    def update(self, delta, tile_size):
+        AnimatedActor.update(self, delta, tile_size)
+
+        if self._horizontal_direction == LEFT:
+            rect = self.get_rect()
+            floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomleft[0] / tile_size) - 1, (rect.bottomleft[1] / tile_size), 1, 1))
+            if not floor_tile_filled or self.physics_manager.gave_impact(self, ImpactSide.LEFT) is not None or self.physics_manager.received_impact(self, ImpactSide.LEFT) is not None:
+                self.physics_manager.set_velocity_x(self, 0)
+                self._horizontal_direction = RIGHT
+            else:
+                self.physics_manager.set_velocity_x(self, LEFT * ENEMY_SPEED)
+        elif self._horizontal_direction == RIGHT:
+            rect = self.get_rect()
+            floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomright[0] / tile_size) + 1, (rect.bottomright[1] / tile_size), 1, 1))
+            if not floor_tile_filled or self.physics_manager.gave_impact(self, ImpactSide.RIGHT) is not None or self.physics_manager.received_impact(self, ImpactSide.RIGHT) is not None:
+                self.physics_manager.set_velocity_x(self, 0)
+                self._horizontal_direction = LEFT
+            else:
+                self.physics_manager.set_velocity_x(self, RIGHT * ENEMY_SPEED)
+
+        #kill self if hit on the head by a block
+        #also kill self if it hits the floor
+        if isinstance(self.physics_manager.received_impact(self, ImpactSide.TOP), Block):
+            self.crush()
+
+    def crush(self):
+        self.dissolved = True
+
+    @staticmethod
+    def generate(model, physics_manager):
+        if model == "rocky":
+            left = pygame.image.load(Enemy.ROCKY[0])
+            right = pygame.transform.flip(left, True, False)
+            enemy = Enemy(left, right, Enemy.ROCKY[1], Enemy.ROCKY[2], physics_manager)
+            enemy.points_per_tile = 10
+            return enemy
+        elif model == "spikey":
+            left = pygame.image.load(Enemy.SPIKEY[0])
+            right = pygame.transform.flip(left, True, False)
+            enemy = Enemy(left, right, Enemy.SPIKEY[1], Enemy.SPIKEY[2], physics_manager)
+            enemy.points_per_tile = 10
+            return enemy
