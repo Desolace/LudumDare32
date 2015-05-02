@@ -17,7 +17,7 @@ class Game(object):
         self.game_instance = GameInstance(config, "first")
         self.clock = pygame.time.Clock()
         self.input_manager = InputManager()
-        self.ui_overlay = UIOverlay()
+        self.ui_overlay = UIOverlay(config["font_file"])
         self.ui_overlay.text_elements["framerate"] = TextElement((20, 50), 20, (0, 0, 0), "0 fps")
 
         self.screens = {

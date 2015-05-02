@@ -32,7 +32,7 @@ class GameInstance(object):
         self.viewport = Viewport(config["width"], config["height"], self.main_char, self.level, 100)
         self.picking_handler = PickingHandler(self.viewport, self.transmutation_manager, self.physics_manager)
 
-        self.ui_overlay = UIOverlay()
+        self.ui_overlay = UIOverlay(config["font_file"])
         self.ui_overlay.text_elements["score"] = TextElement((20, 20), 20, (0, 0, 0), "0 pts")
 
         self.physics_manager.add_actor(self.main_char, weight=3)
