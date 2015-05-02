@@ -6,10 +6,10 @@ class TextElement(object):
         self.position, self.size, self.color, self.value = position, size, color, value
 
 class UIOverlay(object):
-    def __init__(self):
+    def __init__(self, font_file):
         self.text_elements = {}
         self.labels = []
-        self.font_manager = FontManager()
+        self.font_manager = FontManager(font_file)
 
     def update(self, delta):
         self.labels = []
