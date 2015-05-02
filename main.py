@@ -23,7 +23,7 @@ surface = pygame.display.set_mode((config["width"], config["height"]))
 game = GameInstance(config, "first")
 clock = pygame.time.Clock()
 input_manager = InputManager()
-ui_overlay = UIOverlay()
+ui_overlay = UIOverlay(config["font_file"])
 ui_overlay.text_elements["framerate"] = TextElement((20, 50), 20, (0, 0, 0), "0 fps")
 
 screens = {
