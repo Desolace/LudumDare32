@@ -62,5 +62,9 @@ class DebugConsole(object):
         return self._state.is_running
 
     def run_loop(self):
-        self._state.run_loop()
-        self.parse_commands()
+        if self._state.is_running:
+
+            self._state.run_loop()
+            self.parse_commands()
+        else:
+            self._input_thread.join(2)
