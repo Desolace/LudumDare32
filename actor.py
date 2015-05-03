@@ -105,8 +105,8 @@ class Player(AnimatedActor):
     RUN = 'player_run'
     JUMP = 'player_jump'
 
-    def __init__(self, left_surface, right_surface, width_tiles, height_tiles, weight, collidable, sound_manager):
-        self.sound_manager = sound_manager
+    def __init__(self, left_surface, right_surface, width_tiles, height_tiles, weight, collidable):
+        self.sounds = {Player.RUN: None, Player.JUMP: None}
         AnimatedActor.__init__(self, left_surface, right_surface, width_tiles, height_tiles, weight, collidable)
         self.name ="player"
 
@@ -115,22 +115,21 @@ class Player(AnimatedActor):
             self.die()
         AnimatedActor.update(self, delta, tile_size)
 
-        if self.sound_manager is not None: #play needed sounds
-            if self.physical.velocity[0] != 0:
-                self.sound_manager.enable_sound(Player.RUN, SoundEffect.Run)
-            else:
-                self.sound_manager.disable_sound(Player.RUN)
-            if self.physical.velocity[1] < 0:
-                self.sound_manager.enable_sound(Player.JUMP, SoundEffect.Jump)
-            else:
-                self.sound_manager.disable_sound(Player.JUMP)
+        if self.physical.velocity[0] != 0:
+            self.sounds[Player.RUN] = SoundEffect.Run
+        else:
+            self.sounds[Player.RUN] = None
+        if self.physical.velocity[1] < 0:
+            self.sounds[Player.JUMP] = SoundEffect.Jump
+        else:
+            self.sounds[Player.JUMP] = None
 
     def die(self):
         pygame.event.post(pygame.event.Event(CustomEvents.PLAYERDEAD))
 
     @staticmethod
-    def genMainCharacter(sound_manager):
-        return Player(pygame.image.load(Player.MAIN_CHARACTER[0]), pygame.image.load(Player.MAIN_CHARACTER[1]), Player.MAIN_CHARACTER[2], Player.MAIN_CHARACTER[3], 3, True, sound_manager)
+    def genMainCharacter():
+        return Player(pygame.image.load(Player.MAIN_CHARACTER[0]), pygame.image.load(Player.MAIN_CHARACTER[1]), Player.MAIN_CHARACTER[2], Player.MAIN_CHARACTER[3], 3, True)
 
 
 class Enemy(AnimatedActor):

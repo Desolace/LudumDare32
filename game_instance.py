@@ -20,13 +20,12 @@ class GameInstance(object):
     def __init__(self, config, level_name):
         self.config = config
         self.physics_manager = PhysicsManager()
-        self.sound_manager = SoundManager()
         self.material_manager = MaterialManager(config["material_file"])
         self.transmutation_manager = TransmutationManager(self.material_manager)
         self.transmutation_manager.blow_key = "stone"
         self.level = Level("{0}/{1}.lvl".format(config["levels_dir"], level_name), self.physics_manager, self.material_manager)
 
-        self.main_char = Player.genMainCharacter(self.sound_manager)
+        self.main_char = Player.genMainCharacter()
         self.main_char.physical.position = [25, 10]
         self.level.actors.append(self.main_char)
 
@@ -38,6 +37,9 @@ class GameInstance(object):
 
         self.physics_manager.add_actor(self.main_char)
         self._highlight_actors = False
+
+        self.sound_manager = SoundManager()
+        self.sound_manager.actors.append(self.main_char)
 
     """
     Internally sets and returns the tilesize required to display on the given screen
@@ -91,6 +93,7 @@ class GameInstance(object):
     Updates all game objects and manager systems based on the frame time delta
     """
     def _handle_updates(self, delta):
+        self.sound_manager.update(delta)
         self.physics_manager.update(delta, self.tile_size)
         self.picking_handler.update(delta, self.tile_size)
         self.transmutation_manager.update(delta)
