@@ -2,14 +2,14 @@ import pygame
 from collisions import CollisionDetector, ImpactSide
 
 class PhysicsAttributes:
-    def __init__(self):
-        self.width = 0
-        self.height = 0
-        self.position = [0.0,0.0]
-        self.velocity = [0.0,0.0]
-        self.acceleration = [0.0,0.0]
-        self.collidable = True
-        self.weight = 0
+    def __init__(self, width=0, height=0, position=[0.0,0.0], velocity=[0.0,0.0], acceleration=[0.0, 0.0], collidable=True, weight=0):
+        self.width = width
+        self.height = height
+        self.position = list(position)
+        self.velocity = list(velocity)
+        self.acceleration = list(acceleration)
+        self.collidable = collidable
+        self.weight = weight
         self.received_impacts = {}
         self.given_impacts = {}
 
@@ -25,71 +25,43 @@ GRAVITY = 9.8
 class PhysicsManager(object):
     FLOOR = 12318423 #unique identifier for the floor
 
-    _actors = {}
+    _actors = []
     world_width, world_height = None, None
     _collision_precision = 100
 
     UNITS_PER_TILE = 10
 
-    def add_actor(self, actor, weight=False, collidable=True):
-        self._actors[actor] = PhysicsAttributes()
-        self._actors[actor].width = actor.widthInTiles
-        self._actors[actor].height = actor.heightInTiles
-        self._actors[actor].weight = weight
-        self._actors[actor].collidable = collidable
+    def add_actor(self, actor):
+        self._actors.append(actor)
 
     def remove_actor(self, actor):
-        del self._actors[actor]
-
-    def set_velocity(self, actor, velocity):
-        self._actors[actor].velocity = velocity
-    def set_velocity_x(self, actor, velocity_x):
-        self._actors[actor].velocity[X] = velocity_x
-    def set_velocity_y(self, actor, velocity_y):
-        self._actors[actor].velocity[Y] = velocity_y
-    def add_velocity_x(self, actor, velocity_dx):
-        self._actors[actor].velocity[X] += velocity_dx
-    def add_velocity_y(self, actor, velocity_dy):
-        self._actors[actor].velocity[Y] += velocity_dy
-    def get_velocity(self, actor):
-        return self._actors[actor].velocity
-    def get_velocity_x(self, actor):
-        return self._actors[actor].velocity[X]
-    def get_velocity_y(self, actor):
-        return self._actors[actor].velocity[Y]
-    def set_position(self, actor, position):
-        self._actors[actor].position = list(position)
+        self._actors.remove(actor)
 
     def update(self, delta, tileSize):
         collision_detector = CollisionDetector(self._actors, self._collision_precision)
 
         #clear collisions
-        for actor, attributes in self._actors.items():
-            attributes.received_impacts = {}
-            attributes.given_impacts = {}
+        for actor in self._actors:
+            actor.physical.received_impacts = {}
+            actor.physical.given_impacts = {}
 
-        for actor, attributes in self._actors.items():
-            if attributes.weight != 0:
-                attributes.acceleration[Y] = GRAVITY
-            attributes.velocity[X] += delta * attributes.acceleration[X] #every frame, we update the velocity based on how fast it is changing
-            attributes.velocity[Y] += delta * attributes.acceleration[Y]
+        for actor in self._actors:
+            if actor.physical.weight != 0:
+                actor.physical.acceleration[Y] = GRAVITY
+            actor.physical.velocity[X] += delta * actor.physical.acceleration[X] #every frame, we update the velocity based on how fast it is changing
+            actor.physical.velocity[Y] += delta * actor.physical.acceleration[Y]
 
-            dx = delta * attributes.velocity[X] * self.UNITS_PER_TILE
+            dx = delta * actor.physical.velocity[X] * self.UNITS_PER_TILE
             collision_detector.handle_collisions_x(actor, dx)
-            dy = delta * attributes.velocity[Y] * self.UNITS_PER_TILE
+            dy = delta * actor.physical.velocity[Y] * self.UNITS_PER_TILE
             collision_detector.handle_collisions_y(actor, dy)
 
         #set real screen positions
-        for actor, attributes in self._actors.items():
-            actor.position = (attributes.position[X] * tileSize, attributes.position[Y] * tileSize)
+        for actor in self._actors:
+            actor.position = (actor.physical.position[X] * tileSize, actor.physical.position[Y] * tileSize)
 
     def is_space_filled(self, space):
-        for actor, attributes in self._actors.items():
-            if attributes.get_rect().colliderect(space):
+        for actor in self._actors:
+            if actor.physical.get_rect().colliderect(space):
                 return True
         return False
-
-    def received_impact(self, actor, side):
-        return self._actors[actor].received_impacts.get(side, None)
-    def gave_impact(self, actor, side):
-        return self._actors[actor].given_impacts.get(side, None)

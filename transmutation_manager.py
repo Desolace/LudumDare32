@@ -33,7 +33,7 @@ class TransmutationManager(object):
     """
     def blow(self, rect, tile_size):
         material = self.material_manager.get_material(self.blow_key, (rect.width, rect.height))
-        actor = Block(material.surface, rect.width / tile_size, rect.height / tile_size)
+        actor = Block(material.surface, rect.width / tile_size, rect.height / tile_size, weight=material.weight, collidable=True)
         actor.points_per_tile = material.point_value
         actor.dissolvable = True
 
@@ -41,7 +41,7 @@ class TransmutationManager(object):
 
         if points_used <= self.current_points:
             self.current_points -= points_used
-            return (actor, (rect.left / tile_size, rect.top / tile_size), material.weight)
+            return (actor, [rect.left / tile_size, rect.top / tile_size], material.weight)
 
     """
     Finds dissolving actors and absorbs points

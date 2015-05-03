@@ -32,12 +32,13 @@ class Level(object):
                 if item.get("bg"): #its a background item, not interactable with the world
                     self.surface.blit(material.surface, (item['x'], item['y']))
                 else: #its an actor in the world
-                    new_actor = Block(material.surface, item['w'], item['h'])
+                    weight = item.get("weight", material.weight)
+                    new_actor = Block(material.surface, item['w'], item['h'], weight, material.collidable)
                     new_actor.points_per_tile = material.point_value
                     new_actor.dissolvable = item.get("dissolvable", False)
-                    weight = item.get("weight", material.weight)
-                    physics_manager.add_actor(new_actor, weight=weight, collidable=material.collidable)
-                    physics_manager.set_position(new_actor, (item['x'], item['y']))
+                    new_actor.physical.position = [item['x'], item['y']]
+
+                    physics_manager.add_actor(new_actor)
                     self.actors.append(new_actor)
 
                     if item.get("goal"): #this is the level end goal point
@@ -46,8 +47,8 @@ class Level(object):
             for item in self._level_def["enemies"]:
                 enemy = Enemy.generate(item["type"], physics_manager)
                 enemy.dissolvable = item.get("dissolvable", False)
-                physics_manager.add_actor(enemy, weight=5, collidable=True)
-                physics_manager.set_position(enemy, (item["x"], item["y"]))
+                physics_manager.add_actor(enemy)
+                enemy.physical.position = [item["x"], item["y"]]
                 self.actors.append(enemy)
 
         if self.goal is None:
