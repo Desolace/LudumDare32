@@ -1,6 +1,7 @@
 import json
 import pygame
 from actor import Actor, Enemy, Block
+from ai_manager import AIManager
 
 """
 An instance of the given level.
@@ -11,6 +12,7 @@ class Level(object):
 
     def __init__(self, level_name, physics_manager, material_manager):
         self.goal = None
+        self.ai = AIManager(physics_manager)
 
         with open(level_name, "r") as levelData:
             self._level_def = json.load(levelData)
@@ -45,11 +47,12 @@ class Level(object):
                         self.goal = new_actor
 
             for item in self._level_def["enemies"]:
-                enemy = Enemy.generate(item["type"], physics_manager)
+                enemy = Enemy.generate(item["type"])
                 enemy.dissolvable = item.get("dissolvable", False)
                 physics_manager.add_actor(enemy)
                 enemy.physical.position = [item["x"], item["y"]]
                 self.actors.append(enemy)
+                self.ai.actors.append(enemy)
 
         if self.goal is None:
             raise Exception("LvlError: A goal is required for each level.")
@@ -72,6 +75,8 @@ class Level(object):
 
         for actor in self.actors:
             actor.update(delta, tile_size)
+
+        self.ai.update(delta, tile_size)
 
     def get_rect(self):
         return self.surface.get_rect()

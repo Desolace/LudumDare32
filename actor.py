@@ -132,37 +132,17 @@ class Player(AnimatedActor):
     def genMainCharacter(sound_manager):
         return Player(pygame.image.load(Player.MAIN_CHARACTER[0]), pygame.image.load(Player.MAIN_CHARACTER[1]), Player.MAIN_CHARACTER[2], Player.MAIN_CHARACTER[3], 3, True, sound_manager)
 
-LEFT, RIGHT = -1, 1
-ENEMY_SPEED = 1
 
 class Enemy(AnimatedActor):
     ROCKY = ("characters/rocky.png", 4, 4)
     SPIKEY = ("characters/spikey.png", 5, 4)
 
-    def __init__(self, left_surface, right_surface, width_tiles, height_tiles, weight, collidable, physics_manager):
-        self.physics_manager = physics_manager
-        self._horizontal_direction = LEFT
+    def __init__(self, left_surface, right_surface, width_tiles, height_tiles, weight, collidable):
+        self.ai_knowledge = {'speed':1}
         AnimatedActor.__init__(self, left_surface, right_surface, width_tiles, height_tiles, weight, collidable)
 
     def update(self, delta, tile_size):
         AnimatedActor.update(self, delta, tile_size)
-
-        if self._horizontal_direction == LEFT:
-            rect = self.get_rect()
-            floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomleft[0] / tile_size) - 1, (rect.bottomleft[1] / tile_size), 1, 1))
-            if not floor_tile_filled or self.physical.given_impacts.get(ImpactSide.LEFT, None) is not None or self.physical.received_impacts.get(ImpactSide.LEFT, None) is not None:
-                self.physical.velocity[0] = 0
-                self._horizontal_direction = RIGHT
-            else:
-                self.physical.velocity[0] = LEFT * ENEMY_SPEED
-        elif self._horizontal_direction == RIGHT:
-            rect = self.get_rect()
-            floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomright[0] / tile_size) + 1, (rect.bottomright[1] / tile_size), 1, 1))
-            if not floor_tile_filled or self.physical.given_impacts.get(ImpactSide.RIGHT, None) is not None or self.physical.received_impacts.get(ImpactSide.RIGHT, None) is not None:
-                self.physical.velocity[0] = 0
-                self._horizontal_direction = LEFT
-            else:
-                self.physical.velocity[0] = RIGHT * ENEMY_SPEED
 
         #kill self if hit on the head by a block
         #also kill self if it hits the floor
@@ -173,16 +153,16 @@ class Enemy(AnimatedActor):
         self.dissolved = True
 
     @staticmethod
-    def generate(model, physics_manager):
+    def generate(model):
         if model == "rocky":
             left = pygame.image.load(Enemy.ROCKY[0])
             right = pygame.transform.flip(left, True, False)
-            enemy = Enemy(left, right, Enemy.ROCKY[1], Enemy.ROCKY[2], 3, True, physics_manager)
+            enemy = Enemy(left, right, Enemy.ROCKY[1], Enemy.ROCKY[2], 3, True)
             enemy.points_per_tile = 10
             return enemy
         elif model == "spikey":
             left = pygame.image.load(Enemy.SPIKEY[0])
             right = pygame.transform.flip(left, True, False)
-            enemy = Enemy(left, right, Enemy.SPIKEY[1], Enemy.SPIKEY[2], 3, True, physics_manager)
+            enemy = Enemy(left, right, Enemy.SPIKEY[1], Enemy.SPIKEY[2], 3, True)
             enemy.points_per_tile = 10
             return enemy
