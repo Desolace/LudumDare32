@@ -6,6 +6,8 @@ import screens, menu
 from game_instance import GameInstance
 from ui_overlay import UIOverlay, TextElement
 
+from pyconsole import Console
+
 class Game(object):
     def __init__(self, config):
         self.max_fps = config.get("max_fps", 60)
@@ -14,7 +16,7 @@ class Game(object):
         pygame.display.set_caption(config["title"])
         pygame.mixer.init(frequency=44100, size=-16, channels=2, buffer=4096)
         self.display = pygame.display.set_mode((config["width"], config["height"]))
-        self.game_instance = GameInstance(config, "first")
+        self.world = GameInstance(config, "first")
         self.clock = pygame.time.Clock()
         self.input_manager = InputManager()
         self.ui_overlay = UIOverlay(config["font_file"])
@@ -32,6 +34,11 @@ class Game(object):
         self.show_fps = config.get("show_fps", False)
         self.run_loop = self.debug_loop
         self.is_running = True
+        if config.get("use_debug_console", False):
+            self.console = Console(self.display, (0, 0, self.display.get_width(), self.display.get_height() / 2), vars={'game':self})
+            self.console.set_active(False)
+            self.console.setvar("python_mode", True)
+            self.console.set_interpreter()
 
     def debug_loop(self):
         events = self.input_manager.get_active_events()
@@ -47,9 +54,16 @@ class Game(object):
         delta = self.clock.tick(self.max_fps) / 1000.0
 
         self.main_menu.doFrame(self.display, delta, events)
-        pygame.display.update()
+        pygame.display.flip()
+
+    def toggle_paused_screen(self, screen_name):
+        self.paused = not self.paused
+        self.screens[screen_name].enabled = not self.screens[screen_name].enabled
 
     def in_game_loop(self):
+        if hasattr(self, 'console'):
+            self.console.process_input()
+
         events = self.input_manager.get_active_events()
 
         #user closes the game
@@ -58,21 +72,19 @@ class Game(object):
             self.is_running = False
             return
         elif Actions.GAME_WON in events:
-            self.paused = True
-            self.screens["complete"].enabled = True
+            self.toggle_paused_screen("complete")
         elif Actions.GAME_OVER in events:
-            self.paused = True
-            self.screens["gameover"].enabled = True
+            self.toggle_paused_screen("gameover")
         #toggle relevent ui screens
         elif Actions.TOGGLE_PAUSE in events:
-            self.paused = not self.paused
-            self.screens["pause"].enabled = not self.screens["pause"].enabled
+            self.toggle_paused_screen("pause")
         elif Actions.TOGGLE_INVENTORY in events:
-            self.paused = not self.paused
-            self.screens["pause"].enabled = not self.screens["pause"].enabled
-            self.screens["inventory"].enabled = not self.screens["inventory"].enabled
+            self.toggle_paused_screen("inventory")
         elif Actions.TOGGLE_SHOW_FPS in events:
             self.show_fps = not self.show_fps
+        elif Actions.SHOW_CONSOLE in events:
+            if hasattr(self, 'console'):
+                self.console.set_active()
 
         delta = self.clock.tick(self.max_fps) / 1000.0
         if self.show_fps:
@@ -83,9 +95,9 @@ class Game(object):
 
         #render the game field, a delta of 0 means don't do any physics updates, events of [] means dont perform any inputs
         if self.paused:
-            self.game_instance.doFrame(self.display, 0, [])
+            self.world.doFrame(self.display, 0, [])
         else:
-            self.game_instance.doFrame(self.display, delta, events)
+            self.world.doFrame(self.display, delta, events)
 
         #display any active ui screens
         for screen in self.screens.values():
@@ -95,5 +107,8 @@ class Game(object):
         for (label, position, _) in self.ui_overlay.get_drawables():
             self.display.blit(label, position)
 
+        if hasattr(self, 'console'):
+            self.console.draw()
+
         #give it to the user
-        pygame.display.update()
+        pygame.display.flip()

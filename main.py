@@ -1,9 +1,9 @@
 import json
+
 from game_loop import Game
 from argparse import ArgumentParser
-from curses import wrapper
 
-def main(_):
+def main():
     parser = ArgumentParser(description="TODO: Add a description")
     parser.add_argument('--settings', default='settings.cfg', help="Location of the settings file to load")
     parser.add_argument('--show_fps', action='store_true', help="If enabled, the fps ticker will be shown by default")
@@ -30,11 +30,8 @@ def main(_):
         config['use_debug_console'] = args.debug
 
     game = Game(config)
-    if config.get("use_debug_console", False):
-        from debug_console import DebugConsole
-        game = DebugConsole(game)
 
     while game.is_running:
         game.run_loop()
 
-wrapper(main)
+main()

@@ -2,8 +2,8 @@ from __future__ import print_function
 from threading import Thread
 import sys
 import re
-import readline
-
+import curses
+#import readline
 import pygame
 import input_manager as input
 
@@ -26,23 +26,27 @@ class DebugConsole(object):
     def __init__(self, state):
         self._command_queue = Queue()
         self._response_queue = Queue()
-        self._response_queue.put(None)
+        self._response_queue.put("Debug console enabled.")
 
         self._state = state
         self._input_thread = Thread(target=self._run_input_thread)
         self._input_thread.daemon = True
         self._input_thread.start()
 
-    def _run_input_thread(self):
-        if sys.version_info[0] < 3:
-            input = raw_input
+    def _input_loop(self, screen):
 
-        while True:
-            output = self._response_queue.get()
-            if output is not None:
-                print(output)
-            command = input()
-            self._command_queue.put(command)
+      if sys.version_info[0] < 3:
+          input = raw_input
+
+      while True:
+          output = self._response_queue.get()
+          if output is not None:
+              print(output)
+          #command = input(">> ")
+          #self._command_queue.put(command)
+
+    def _run_input_thread(self):
+        self._input_loop(None)
 
     def parse_commands(self):
         while not self._command_queue.empty():
