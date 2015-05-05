@@ -25,7 +25,6 @@ class Actor(object):
         self._is_dissolving = False
         self.dissolved = False
         self.dissolvable = False
-        self.name = "actor"
 
     def start_dissolving(self):
         if not self._is_dissolving:
@@ -109,7 +108,6 @@ class Player(AnimatedActor):
         self.physics_manager = physics_manager
         self.sound_manager = sound_manager
         AnimatedActor.__init__(self, left_surface, right_surface, width_tiles, height_tiles, physics_manager)
-        self.name ="player"
 
     def update(self, delta, tile_size):
         if isinstance(self.physics_manager.received_impact(self, ImpactSide.TOP), Block):

@@ -31,6 +31,8 @@ class Actions(object):
     MUTE=22
     UNMUTE=23
 
+    SHOW_CONSOLE=25
+
 class CustomEvents:
     CHOOSEMAT=USEREVENT+1
     CLOSEINV=USEREVENT+2
@@ -62,6 +64,9 @@ class InputManager(object):
                     actions.append(Actions.MUTE)
             elif event.type == KEYDOWN and event.key == K_f:
                 actions.append(Actions.TOGGLE_SHOW_FPS)
+            elif event.type == KEYDOWN and event.key == K_w:
+                if pygame.key.get_mods() & KMOD_CTRL:
+                    actions.append(Actions.SHOW_CONSOLE)
             elif self._in_game:
                 """
                 Game is in session
@@ -167,6 +172,9 @@ class InputManager(object):
                     if event.button == 1:
                         actions.append((Actions.USER_MENU_CLICK, event.pos))
                 elif event.type == CustomEvents.STARTBUTTONCLICK:
+                    self._in_game = True
+                    actions.append(Actions.START_GAME)
+                elif event.type == KEYDOWN and event.key == K_SPACE:
                     self._in_game = True
                     actions.append(Actions.START_GAME)
 
