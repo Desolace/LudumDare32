@@ -25,7 +25,6 @@ class Actor(object):
         self._is_dissolving = False
         self.dissolved = False
         self.dissolvable = False
-        self.name = "actor"
 
     def start_dissolving(self):
         if not self._is_dissolving:
