@@ -2,20 +2,20 @@ import pygame
 import random
 import math
 
-from physics_manager import PhysicsManager
+from physics_manager import PhysicsAttributes
 from collisions import ImpactSide
 from input_manager import CustomEvents
 from sound_manager import SoundEffect
 
 class Actor(object):
-    _hash = None
-    surface = None
-    widthInTiles, heightInTiles = None, None
-    position = (0,0)
-    _tile_size = None
+
     DISSOLVE_DURATION_SECONDS = 1
 
-    def __init__(self, surface, width_tiles, height_tiles):
+    def __init__(self, surface, width_tiles, height_tiles, weight=3, collidable=True):
+        self.physical = PhysicsAttributes(width=width_tiles, height=height_tiles, weight=weight, collidable=collidable)
+
+        self._tile_size = None
+        self.surface = None
         self._base_surface = surface
         self._base_surface.set_colorkey((1,1,1))
         self._hash = hash(self._base_surface)
@@ -66,13 +66,13 @@ class Actor(object):
         return surf_rect.move(*self.position)
 
 class Block(Actor):
-    def __init__(self, surface, width_tiles, height_tiles):
-        Actor.__init__(self, surface, width_tiles, height_tiles)
+    def __init__(self, surface, width_tiles, height_tiles, weight, collidable):
+        Actor.__init__(self, surface, width_tiles, height_tiles, weight, collidable)
 
 class AnimatedActor(Actor):
-    def __init__(self, left_surface, right_surface, width_tiles, height_tiles, physics_manager):
+    def __init__(self, left_surface, right_surface, width_tiles, height_tiles, weight, collidable):
         assert left_surface.get_size() == right_surface.get_size()
-        Actor.__init__(self, right_surface, width_tiles, height_tiles)
+        Actor.__init__(self, right_surface, width_tiles, height_tiles, weight, collidable)
         self._base_left_surface = left_surface
         self._base_right_surface = right_surface
 
@@ -89,7 +89,7 @@ class AnimatedActor(Actor):
         self.surface = self._right_surface
         Actor.update(self, delta, tile_size)
 
-        velocity = self.physics_manager.get_velocity_x(self)
+        velocity = self.physical.velocity[0]
         if velocity > 0: #going right
             self.surface = self._right_surface
         elif velocity < 0: #going left
@@ -104,84 +104,63 @@ class Player(AnimatedActor):
     RUN = 'player_run'
     JUMP = 'player_jump'
 
-    def __init__(self, left_surface, right_surface, width_tiles, height_tiles, physics_manager, sound_manager):
-        self.physics_manager = physics_manager
-        self.sound_manager = sound_manager
-        AnimatedActor.__init__(self, left_surface, right_surface, width_tiles, height_tiles, physics_manager)
+    def __init__(self, left_surface, right_surface, width_tiles, height_tiles, weight, collidable):
+        self.sounds = {Player.RUN: None, Player.JUMP: None}
+        AnimatedActor.__init__(self, left_surface, right_surface, width_tiles, height_tiles, weight, collidable)
+        self.name ="player"
 
     def update(self, delta, tile_size):
-        if isinstance(self.physics_manager.received_impact(self, ImpactSide.TOP), Block):
+        if isinstance(self.physical.received_impacts.get(ImpactSide.TOP, None), Block):
             self.die()
         AnimatedActor.update(self, delta, tile_size)
 
-        if self.sound_manager is not None: #play needed sounds
-            if self.physics_manager.get_velocity_x(self) != 0:
-                self.sound_manager.enable_sound(Player.RUN, SoundEffect.Run)
-            else:
-                self.sound_manager.disable_sound(Player.RUN)
-            if self.physics_manager.get_velocity_y(self) < 0:
-                self.sound_manager.enable_sound(Player.JUMP, SoundEffect.Jump)
-            else:
-                self.sound_manager.disable_sound(Player.JUMP)
+        if self.physical.velocity[0] != 0:
+            self.sounds[Player.RUN] = SoundEffect.Run
+        else:
+            self.sounds[Player.RUN] = None
+        if self.physical.velocity[1] < 0:
+            self.sounds[Player.JUMP] = SoundEffect.Jump
+        else:
+            self.sounds[Player.JUMP] = None
 
     def die(self):
         pygame.event.post(pygame.event.Event(CustomEvents.PLAYERDEAD))
 
     @staticmethod
-    def genMainCharacter(physics_manager, sound_manager):
-        return Player(pygame.image.load(Player.MAIN_CHARACTER[0]), pygame.image.load(Player.MAIN_CHARACTER[1]), Player.MAIN_CHARACTER[2], Player.MAIN_CHARACTER[3], physics_manager, sound_manager)
+    def genMainCharacter():
+        return Player(pygame.image.load(Player.MAIN_CHARACTER[0]), pygame.image.load(Player.MAIN_CHARACTER[1]), Player.MAIN_CHARACTER[2], Player.MAIN_CHARACTER[3], 3, True)
 
-LEFT, RIGHT = -1, 1
-ENEMY_SPEED = 1
 
 class Enemy(AnimatedActor):
     ROCKY = ("characters/rocky.png", 4, 4)
     SPIKEY = ("characters/spikey.png", 5, 4)
 
-    def __init__(self, left_surface, right_surface, width_tiles, height_tiles, physics_manager):
-        self.physics_manager = physics_manager
-        self._horizontal_direction = LEFT
-        AnimatedActor.__init__(self, left_surface, right_surface, width_tiles, height_tiles, physics_manager)
+    def __init__(self, left_surface, right_surface, width_tiles, height_tiles, weight, collidable):
+        self.ai_knowledge = {'speed':1}
+        AnimatedActor.__init__(self, left_surface, right_surface, width_tiles, height_tiles, weight, collidable)
 
     def update(self, delta, tile_size):
         AnimatedActor.update(self, delta, tile_size)
 
-        if self._horizontal_direction == LEFT:
-            rect = self.get_rect()
-            floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomleft[0] / tile_size) - 1, (rect.bottomleft[1] / tile_size), 1, 1))
-            if not floor_tile_filled or self.physics_manager.gave_impact(self, ImpactSide.LEFT) is not None or self.physics_manager.received_impact(self, ImpactSide.LEFT) is not None:
-                self.physics_manager.set_velocity_x(self, 0)
-                self._horizontal_direction = RIGHT
-            else:
-                self.physics_manager.set_velocity_x(self, LEFT * ENEMY_SPEED)
-        elif self._horizontal_direction == RIGHT:
-            rect = self.get_rect()
-            floor_tile_filled = self.physics_manager.is_space_filled(pygame.Rect((rect.bottomright[0] / tile_size) + 1, (rect.bottomright[1] / tile_size), 1, 1))
-            if not floor_tile_filled or self.physics_manager.gave_impact(self, ImpactSide.RIGHT) is not None or self.physics_manager.received_impact(self, ImpactSide.RIGHT) is not None:
-                self.physics_manager.set_velocity_x(self, 0)
-                self._horizontal_direction = LEFT
-            else:
-                self.physics_manager.set_velocity_x(self, RIGHT * ENEMY_SPEED)
-
         #kill self if hit on the head by a block
         #also kill self if it hits the floor
-        if isinstance(self.physics_manager.received_impact(self, ImpactSide.TOP), Block):
+        if isinstance(self.physical.received_impacts.get(ImpactSide.TOP, None), Block):
             self.crush()
 
     def crush(self):
         self.dissolved = True
 
     @staticmethod
-    def generate(model, physics_manager):
+    def generate(model):
         if model == "rocky":
             left = pygame.image.load(Enemy.ROCKY[0])
             right = pygame.transform.flip(left, True, False)
-            enemy = Enemy(left, right, Enemy.ROCKY[1], Enemy.ROCKY[2], physics_manager)
+            enemy = Enemy(left, right, Enemy.ROCKY[1], Enemy.ROCKY[2], 3, True)
             enemy.points_per_tile = 10
             return enemy
         elif model == "spikey":
             left = pygame.image.load(Enemy.SPIKEY[0])
             right = pygame.transform.flip(left, True, False)
-            enemy = Enemy(left, right, Enemy.SPIKEY[1], Enemy.SPIKEY[2], physics_manager)
+            enemy = Enemy(left, right, Enemy.SPIKEY[1], Enemy.SPIKEY[2], 3, True)
             enemy.points_per_tile = 10
             return enemy
