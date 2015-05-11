@@ -254,6 +254,11 @@ class Console:
 		else:
 			self.active = b
 
+		if self.active:
+			pygame.key.set_repeat(*self.repeat_rate)
+		else:
+			pygame.key.set_repeat()
+
 
 	def format_input_line(self):
 		'''\
