@@ -53,11 +53,11 @@ class Viewport(object):
         self.surface.blit(self.level.surface, (-self._view.x, -self._view.y))
         for actor in self.level.actors:
             self.surface.blit(actor.surface, (actor.position[0] - self._view.x, actor.position[1] - self._view.y))
-        for (d_surface, position, should_reposition) in additional_drawables:
-            if should_reposition:
-                self.surface.blit(d_surface, (position[0] - self._view.x, position[1] - self._view.y))
+        for drawable in additional_drawables:
+            if drawable.should_reposition:
+                self.surface.blit(drawable.surface, (drawable.position[0] - self._view.x, drawable.position[1] - self._view.y))
             else:
-                self.surface.blit(d_surface, (position[0], position[1]))
+                self.surface.blit(drawable.surface, (drawable.position[0], drawable.position[1]))
         return self.surface
 
     def convert_position(self, position):

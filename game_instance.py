@@ -117,9 +117,10 @@ class GameInstance(object):
                 pygame.draw.rect(picker[0], tuple(self.config["picking_color"]), picker[0].get_rect(), 2)
                 additional_drawables.append(picker)
 
-        additional_drawables.append((self.picking_handler.surface, self.picking_handler.position, True))
-
+        additional_drawables.append(self.picking_handler)
         additional_drawables += self.ui_overlay.get_drawables()
+        if self.config.get("show_grid", False):
+            additional_drawables.append(self.level.grid)
 
         screen.blit(self.viewport.render(additional_drawables), (0,0))
 

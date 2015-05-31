@@ -7,6 +7,7 @@ def main():
     parser = ArgumentParser(description="TODO: Add a description")
     parser.add_argument('--settings', default='settings.cfg', help="Location of the settings file to load")
     parser.add_argument('--show_fps', action='store_true', help="If enabled, the fps ticker will be shown by default")
+    parser.add_argument('--show_grid', action='store_true', help="If enabled, a tile grid will be shown")
     parser.add_argument('--max_fps', type=int, help="The maximum framerate of the game")
     parser.add_argument('--width', type=int, help="Width of the screen")
     parser.add_argument('--height', type=int, help="Height of the screen")
@@ -26,6 +27,8 @@ def main():
         config['height'] = args.height
     if args.show_fps:
         config['show_fps'] = args.show_fps
+    if args.show_grid:
+        config['show_grid'] = args.show_grid
     if args.debug:
         config['use_debug_console'] = args.debug
 

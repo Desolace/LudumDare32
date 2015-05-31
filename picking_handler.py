@@ -1,9 +1,10 @@
 import pygame
+from drawable import Drawable
 
 """
 Monitors the users mouse and their selections
 """
-class PickingHandler(object):
+class PickingHandler(Drawable):
     SUCCESS_COLOR = (0,0,255)
     ERROR_COLOR = (255,0,0)
 
@@ -13,6 +14,7 @@ class PickingHandler(object):
         self.physics_manager = physics_manager
         self._user_selection_bound1 = None
         self._user_selection_bound2 = None
+        self.should_reposition = True
 
     def is_picked(self, actor, position):
         position = self.viewport.convert_position(position)

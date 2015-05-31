@@ -2,6 +2,7 @@ import json
 import pygame
 from actor import Actor, Enemy, Block
 from ai_manager import AIManager
+from debug_features.grid import DebugGrid
 
 """
 An instance of the given level.
@@ -18,6 +19,7 @@ class Level(object):
             self._level_def = json.load(levelData)
             self.width = self._level_def['w']
             self.height = self._level_def['h']
+            self.grid = DebugGrid(self.width, self.height)
             self.actors = []
             self._tile_size = None
             self.physics_manager = physics_manager
@@ -65,6 +67,7 @@ class Level(object):
     """
     def update(self, delta, tile_size):
         if(tile_size != self._tile_size):
+            self.grid.rescale(tile_size)
             self.surface = pygame.transform.scale(self.surface, (int(self.width * tile_size), int(self.height * tile_size)))
             self._tile_size = tile_size
 

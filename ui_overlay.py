@@ -1,4 +1,5 @@
 import pygame
+from drawable import Drawable
 from font_manager import FontManager
 
 class TextElement(object):
@@ -16,7 +17,8 @@ class UIOverlay(object):
         for text_element in self.text_elements.values():
             if len(text_element.value) > 0:
                 label = self.font_manager._get_font(text_element.size).render(text_element.value, 1, text_element.color)
-                self.labels.append((label, text_element.position, False))
+                self.labels.append(Drawable(label, text_element.position, False))
+                x = pygame.Surface((text_element.size, text_element.size))
 
     def get_drawables(self):
         return self.labels
