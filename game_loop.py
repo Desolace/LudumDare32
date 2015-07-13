@@ -104,8 +104,8 @@ class Game(object):
             screen.doFrame(self.display, delta, events)
 
         #render the app-scope UI
-        for (label, position, _) in self.ui_overlay.get_drawables():
-            self.display.blit(label, position)
+        for drawable in self.ui_overlay.get_drawables():
+            self.display.blit(drawable.surface, drawable.position)
 
         if hasattr(self, 'console'):
             self.console.draw()

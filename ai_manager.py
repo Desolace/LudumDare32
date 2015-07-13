@@ -27,7 +27,6 @@ class AIManager(object):
                  or stuck:
                     actor.physical.velocity[X] = 0
                     actor.ai_knowledge['x_dir'] = RIGHT
-                    print "flip right"
                 else:
                     actor.physical.velocity[X] = LEFT * speed
             elif direction == RIGHT:
@@ -39,7 +38,6 @@ class AIManager(object):
                  or stuck:
                     actor.physical.velocity[X] = 0
                     actor.ai_knowledge['x_dir'] = LEFT
-                    print "flip left"
                 else:
                     actor.physical.velocity[X] = RIGHT * speed
 
